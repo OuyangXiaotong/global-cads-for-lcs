@@ -77,6 +77,8 @@
     .flag { font-size: 20px; flex-shrink: 0; }
     .co-info { flex: 1; min-width: 0; }
     .co-name { font-size: 14px; font-weight: 500; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .co-web-link { display: inline-flex; align-items: center; color: var(--ink3); margin-left: 5px; vertical-align: middle; text-decoration: none; opacity: .75; transition: opacity .15s, color .15s; position: relative; top: -1px; flex-shrink: 0; }
+    .co-web-link:hover { opacity: 1; color: var(--ink2); }
     .co-region { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink3); margin-top: 1px; }
     .co-meta { display: flex; align-items: center; gap: 8px; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
     .badge { font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; padding: 3px 8px; border-radius: 100px; }
@@ -256,6 +258,46 @@ const FLAG = {US:'🇺🇸', DE:'🇩🇪', NL:'🇳🇱', FR:'🇫🇷', AT:'�
 const REGION_NAMES = {US:'United States', DE:'Germany', NL:'Netherlands', FR:'France', AT:'Austria', LT:'Lithuania', PT:'Portugal', GB:'United Kingdom', KR:'South Korea', CN:'China', JP:'Japan', AU:'Australia', IL:'Israel'};
 const CHART_COLORS = ['#185FA5','#2D6A1F','#8B3A1A','#5F5E5A','#7A4F0A','#1A6B3A','#9A968F','#1A4A8A','#5A2E6B','#A03020','#2E6B5A','#6B5A2E','#3A5A8B'];
 
+// ── Company websites ─────────────────────────────────────────────────────────
+const WEB = {
+  'Siemens / Siemens Healthineers':           'https://www.siemens-healthineers.com',
+  'GE Medical Systems / GE Healthcare':       'https://www.gehealthcare.com',
+  'Median Technologies':                       'https://www.mediantechnologies.com',
+  'Toshiba Medical Systems':                  'https://global.medical.canon',
+  'RadLogics':                                'https://www.radlogics.com',
+  'IMBIO LLC':                                'https://www.imbio.com',
+  'Riverain Technologies':                    'https://www.riveraintech.com',
+  'Body Vision Medical / BodyVision Medical': 'https://www.bodyvisionmedical.com',
+  'Philips Medical Systems / Healthcare':     'https://www.philips.com/healthcare',
+  'Thirona':                                  'https://thirona.eu',
+  'Coreline Soft':                            'https://www.corelinesoft.com',
+  'Optellum':                                 'https://optellum.com',
+  'Change Healthcare':                        'https://www.changehealthcare.com',
+  'Fujifilm':                                 'https://www.fujifilm.com/us/en/healthcare',
+  'Imagen Technologies':                      'https://www.imagen.ai',
+  'MEDICALIP':                                'https://www.medicalip.com',
+  'Qure.ai':                                  'https://qure.ai',
+  'Infervision':                              'https://www.infervision.com',
+  'Arineta':                                  'https://www.arineta.com',
+  'V5med':                                    'https://www.v5med.com',
+  'Exo Inc':                                  'https://www.exo.inc',
+  'AZmed':                                    'https://azmed.co',
+  'United Imaging Intelligence':              'https://www.uii-ai.com',
+  'contextflow':                              'https://contextflow.com',
+  'Oxipit':                                   'https://oxipit.ai',
+  'Harrison.ai':                              'https://harrison.ai',
+  'JLK Inc.':                                 'https://www.jlkgroup.com',
+  'Monitor Corporation':                      'https://www.monitornet.co.jp',
+  'DeepHealth':                               'https://deephealth.ai',
+  'Rayscape':                                 'https://rayscape.ai',
+  'GLEAMER':                                  'https://www.gleamer.ai',
+  'RevealDx':                                 'https://revealdx.com',
+  'SenseTime':                                'https://www.sensetime.com/en',
+  'Milvue':                                   'https://milvue.com',
+  'Mitsubishi Space Software':                'https://www.mss.co.jp',
+  'MeVis Medical Solutions':                  'https://www.mevis.de',
+};
+
 // ── Data ─────────────────────────────────────────────────────────────────────
 const COMPANIES = [
   {name:'Deus Technologies', region:'US', products:[
@@ -431,6 +473,7 @@ function prodTagHTML(p) {
 
 function cardHTML(co) {
   const rt = regType(co.products);
+  const web = WEB[co.name];
   const rows = co.products.map(p => `
     <tr>
       <td><span class="p-dot" style="background:${ERA_COLORS[p.era]}"></span>${esc(p.name)}</td>
@@ -446,7 +489,7 @@ function cardHTML(co) {
     <div class="card-hd" onclick="this.parentElement.classList.toggle('open')">
       <span class="flag">${FLAG[co.region]||''}</span>
       <div class="co-info">
-        <div class="co-name">${esc(co.name)}</div>
+        <div class="co-name">${esc(co.name)}${web ? `<a class="co-web-link" href="${esc(web)}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" title="${esc(web)}"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15,3 21,3 21,9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>` : ''}</div>
         <div class="co-region">${REGION_NAMES[co.region]||co.region}</div>
       </div>
       <div class="co-meta">
