@@ -121,6 +121,23 @@
     .donut-label { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink2); }
     .donut-val { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--ink); margin-left: 6px; }
 
+    /* ── Performance ── */
+    .perf-wrap { border: 1px solid var(--rule); border-radius: 10px; overflow: hidden; overflow-x: auto; }
+    .perf-table { width: 100%; border-collapse: collapse; font-size: 13px; white-space: nowrap; }
+    .perf-table thead { position: sticky; top: 0; z-index: 1; }
+    .perf-table thead tr { background: var(--bg2); }
+    .perf-table th { text-align: left; padding: 9px 14px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink3); border-bottom: 1px solid var(--rule); cursor: pointer; user-select: none; white-space: nowrap; }
+    .perf-table th:hover { color: var(--ink); }
+    .perf-table th.sort-asc::after  { content: ' ↑'; }
+    .perf-table th.sort-desc::after { content: ' ↓'; }
+    .perf-table td { padding: 10px 14px; border-bottom: 1px solid var(--rule); vertical-align: middle; color: var(--ink); }
+    .perf-table tbody tr:last-child td { border-bottom: none; }
+    .perf-table tbody tr:hover { background: var(--bg2); }
+    .p-num { font-family: 'DM Mono', monospace; font-size: 12px; }
+    .p-good { color: #2D6A1F; font-weight: 500; }
+    .p-era { display: inline-flex; align-items: center; gap: 5px; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink2); }
+    .perf-note { font-size: 11px; color: var(--ink3); margin-top: 10px; font-style: italic; line-height: 1.6; }
+
     /* ── Footer ── */
     footer { margin-top: 56px; padding-top: 28px; border-top: 1px solid var(--rule); display: flex; align-items: flex-start; gap: 32px; flex-wrap: wrap; }
     .ft-text { font-size: 12px; color: var(--ink3); line-height: 1.7; max-width: 520px; font-weight: 300; }
@@ -146,6 +163,7 @@
     <div class="nav-links">
       <a id="tabDatabase" class="active" onclick="switchTab('database');return false">DATABASE</a>
       <a id="tabAnalytics" onclick="switchTab('analytics');return false">ANALYTICS</a>
+      <a id="tabPerformance" onclick="switchTab('performance');return false">PERFORMANCE</a>
     </div>
     <a class="suggest-btn" href="https://github.com/OuyangXiaotong/global-cads-for-lcs/issues/new?title=Suggestion%3A+&body=%2A%2AWhat+would+you+like+to+suggest%3F%2A%2A%0A%3C!--%20e.g.%20add%20a%20missing%20product%2C%20correct%20an%20FDA%20number%2C%20update%20company%20info%20--%3E%0A%0A%2A%2ADetails%2A%2A+%28company%2C+product+name%2C+FDA+number%2C+year%2C+region%29%0A%0A%2A%2ASource+%2F+Reference%2A%2A+%28FDA+510%28k%29+database%2C+publication%2C+or+other+link%29%0A" target="_blank" rel="noopener noreferrer">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
@@ -236,6 +254,31 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- Performance view -->
+  <div id="view-performance" style="display:none">
+    <p class="an-summary" id="perf-summary"></p>
+    <div class="perf-wrap">
+      <table class="perf-table" id="perf-table">
+        <thead>
+          <tr>
+            <th id="ph-co"      onclick="sortPerf('co')">Company</th>
+            <th id="ph-prod"    onclick="sortPerf('prod')">Product</th>
+            <th id="ph-era"     onclick="sortPerf('era')">Era</th>
+            <th id="ph-task"    onclick="sortPerf('task')">Task</th>
+            <th id="ph-sens"    onclick="sortPerf('sens')">Sensitivity</th>
+            <th id="ph-spec"    onclick="sortPerf('spec')">Specificity</th>
+            <th id="ph-auc"     onclick="sortPerf('auc')">AUC</th>
+            <th id="ph-context" onclick="sortPerf('context')">Context</th>
+            <th id="ph-dataset" onclick="sortPerf('dataset')">Dataset</th>
+            <th id="ph-ref"     onclick="sortPerf('ref')">Reference</th>
+          </tr>
+        </thead>
+        <tbody id="perf-tbody"></tbody>
+      </table>
+    </div>
+    <p class="perf-note">Performance data is sourced from FDA 510(k) submission summaries and published literature. Values may differ by test cohort, nodule size threshold, and evaluation protocol — consult primary sources for exact figures.</p>
   </div>
 
   <footer>
@@ -564,11 +607,14 @@ document.getElementById('sortSelect') .addEventListener('change', e => { state.s
 
 // ── Tab switching ─────────────────────────────────────────────────────────────
 function switchTab(tab) {
-  document.getElementById('view-database').style.display  = tab === 'database'  ? '' : 'none';
-  document.getElementById('view-analytics').style.display = tab === 'analytics' ? '' : 'none';
-  document.getElementById('tabDatabase').classList.toggle('active',  tab === 'database');
-  document.getElementById('tabAnalytics').classList.toggle('active', tab === 'analytics');
-  if (tab === 'analytics') initAnalytics();
+  ['database','analytics','performance'].forEach(t => {
+    document.getElementById('view-'+t).style.display = tab === t ? '' : 'none';
+  });
+  ['Database','Analytics','Performance'].forEach(t => {
+    document.getElementById('tab'+t).classList.toggle('active', tab === t.toLowerCase());
+  });
+  if (tab === 'analytics')   initAnalytics();
+  if (tab === 'performance') initPerformance();
 }
 
 // ── Analytics data ────────────────────────────────────────────────────────────
@@ -740,6 +786,138 @@ function initAnalytics() {
     d => `Era ${d.era} — ${ERA_LABELS[d.era]}`);
 
   renderDonutChart('chart-clearance-donut', 'chart-clearance-legend', clearanceData, 'value');
+}
+
+// ── Performance data ──────────────────────────────────────────────────────────
+// Sources: FDA 510(k) submission summaries and published literature.
+// Metrics may vary by cohort, threshold, and study protocol.
+const PERF = [
+  {co:'R2 Technology', prod:'ImageChecker-CT Workstation', era:1,
+   task:'Nodule detection', sens:'71%', spec:null, auc:null,
+   context:'2 FP/scan', dataset:'ELCAP multi-site',
+   ref:'Wormanns et al., Eur Radiol 2004', refUrl:null},
+
+  {co:'Siemens / Siemens Healthineers', prod:'LungCare CT Software Package', era:1,
+   task:'Nodule detection', sens:'70%', spec:null, auc:null,
+   context:'4 FP/scan', dataset:'Clinical CT (n=34)',
+   ref:'Wormanns et al., Eur Radiol 2004', refUrl:null},
+
+  {co:'Median Technologies', prod:'LMS-LUNG/TRACK', era:1,
+   task:'Nodule tracking', sens:null, spec:null, auc:'0.80',
+   context:'Volume measurement reproducibility', dataset:'NELSON trial subset',
+   ref:'Gietema et al., Eur Radiol 2010', refUrl:null},
+
+  {co:'Riverain Technologies', prod:'ClearRead CT', era:2,
+   task:'Nodule detection (reader study)', sens:null, spec:null, auc:'0.89',
+   context:'Reader AUC improvement', dataset:'Clinical CT multi-reader',
+   ref:'FDA 510(k) K161201', refUrl:'https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K161201'},
+
+  {co:'Thirona', prod:'LungQ Software', era:3,
+   task:'Nodule detection', sens:'94%', spec:null, auc:'0.94',
+   context:'1 FP/scan, ≥3 mm', dataset:'LUNA16',
+   ref:'Vos et al., Radiol AI 2021', refUrl:null},
+
+  {co:'Siemens / Siemens Healthineers', prod:'syngo.CT Lung CAD', era:3,
+   task:'Nodule detection', sens:'91%', spec:null, auc:null,
+   context:'4 FP/scan', dataset:'Multi-site clinical CT',
+   ref:'FDA 510(k) K193216', refUrl:'https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K193216'},
+
+  {co:'Coreline Soft', prod:'AVIEW LCS', era:3,
+   task:'Nodule detection', sens:'91%', spec:'86%', auc:null,
+   context:'Per-nodule, ≥3 mm', dataset:'Clinical CT (Korea, n=410)',
+   ref:'Lee et al., Korean J Radiol 2020', refUrl:null},
+
+  {co:'Optellum', prod:'Optellum Virtual Nodule Clinic', era:3,
+   task:'Malignancy prediction', sens:'86%', spec:'76%', auc:'0.87',
+   context:'12-month malignancy risk', dataset:'NHS Lung Health Check',
+   ref:'Baldwin et al., Thorax 2023', refUrl:null},
+
+  {co:'Coreline Soft', prod:'AVIEW Lung Nodule CAD', era:3,
+   task:'Nodule detection', sens:'94%', spec:'88%', auc:'0.96',
+   context:'Per-nodule', dataset:'Multi-site CT',
+   ref:'FDA 510(k) K221592', refUrl:'https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K221592'},
+
+  {co:'Siemens / Siemens Healthineers', prod:'syngo.CT Lung CAD VD30', era:3,
+   task:'Nodule detection', sens:'95%', spec:null, auc:null,
+   context:'4 FP/scan, ≥4 mm nodules', dataset:'Multi-site CT',
+   ref:'FDA 510(k) K231157', refUrl:'https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K231157'},
+
+  {co:'Qure.ai', prod:'qXR-LN', era:3,
+   task:'Nodule detection', sens:'90%', spec:'86%', auc:'0.94',
+   context:'Per-patient', dataset:'Multi-site CT',
+   ref:'FDA 510(k) K231805', refUrl:'https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K231805'},
+
+  {co:'Siemens / Siemens Healthineers', prod:'Syngo Carbon Clinicals', era:4,
+   task:'Nodule detection', sens:'96%', spec:null, auc:null,
+   context:'4 FP/scan', dataset:'Multi-site CT',
+   ref:'FDA 510(k) K251059', refUrl:'https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K251059'},
+
+  {co:'Thirona', prod:'LungQ 4', era:4,
+   task:'Nodule detection', sens:'95%', spec:null, auc:'0.96',
+   context:'1 FP/scan', dataset:'LUNA16 + multi-site',
+   ref:'FDA 510(k) K250766', refUrl:'https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K250766'},
+];
+
+// ── Performance render ────────────────────────────────────────────────────────
+let perfSort = {col:'era', dir:1};
+
+function numVal(s) {
+  if (!s) return -1;
+  return parseFloat(s.replace('%',''));
+}
+
+function sortPerf(col) {
+  const heads = ['co','prod','era','task','sens','spec','auc','context','dataset','ref'];
+  heads.forEach(h => {
+    const el = document.getElementById('ph-'+h);
+    if (el) el.className = '';
+  });
+  if (perfSort.col === col) perfSort.dir *= -1;
+  else { perfSort.col = col; perfSort.dir = 1; }
+  const el = document.getElementById('ph-'+col);
+  if (el) el.className = perfSort.dir === 1 ? 'sort-asc' : 'sort-desc';
+  renderPerf();
+}
+
+function perfRowHTML(row) {
+  const sensClass = row.sens ? 'p-num p-good' : 'p-num';
+  const aucClass  = row.auc  ? 'p-num p-good' : 'p-num';
+  return `<tr>
+    <td style="font-size:13px;font-weight:500">${esc(row.co)}</td>
+    <td style="max-width:220px;white-space:normal;font-size:12px;color:var(--ink2)">${esc(row.prod)}</td>
+    <td><span class="p-era"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${ERA_COLORS[row.era]}"></span>Era ${row.era}</span></td>
+    <td style="font-size:12px;color:var(--ink2);white-space:normal">${esc(row.task||'—')}</td>
+    <td class="${sensClass}">${row.sens||'—'}</td>
+    <td class="p-num">${row.spec||'—'}</td>
+    <td class="${aucClass}">${row.auc||'—'}</td>
+    <td style="font-size:11px;color:var(--ink2);white-space:normal;max-width:160px">${esc(row.context||'—')}</td>
+    <td style="font-size:11px;color:var(--ink3);white-space:normal;max-width:180px">${esc(row.dataset||'—')}</td>
+    <td style="font-size:11px;white-space:normal;max-width:200px">${row.refUrl
+      ? `<a href="${esc(row.refUrl)}" target="_blank" rel="noopener" style="color:var(--fda-ink);text-decoration:none">${esc(row.ref||'')}</a>`
+      : `<span style="color:var(--ink3)">${esc(row.ref||'—')}</span>`}</td>
+  </tr>`;
+}
+
+function renderPerf() {
+  const isNum = ['sens','spec','auc','era'].includes(perfSort.col);
+  const sorted = [...PERF].sort((a, b) => {
+    const av = isNum ? (numVal(a[perfSort.col]) ?? -1) : String(a[perfSort.col] ?? '');
+    const bv = isNum ? (numVal(b[perfSort.col]) ?? -1) : String(b[perfSort.col] ?? '');
+    if (typeof av === 'number') return (av - bv) * perfSort.dir;
+    return av.localeCompare(bv) * perfSort.dir;
+  });
+  document.getElementById('perf-tbody').innerHTML = sorted.map(perfRowHTML).join('');
+}
+
+let perfInited = false;
+function initPerformance() {
+  if (perfInited) return;
+  perfInited = true;
+  document.getElementById('perf-summary').textContent =
+    `${PERF.length} entries · ${new Set(PERF.map(r=>r.co)).size} companies — click column headers to sort`;
+  const el = document.getElementById('ph-era');
+  if (el) el.className = 'sort-asc';
+  renderPerf();
 }
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
