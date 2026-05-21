@@ -1,6 +1,6 @@
 export type Region = 'US' | 'DE' | 'NL' | 'FR' | 'AT' | 'LT' | 'PT' | 'GB' | 'KR' | 'CN' | 'JP' | 'AU' | 'IL'
 export type RegFilter = 'fda' | 'ce' | 'both' | ''
-export type SortKey = 'name' | 'products' | 'year'
+export type SortKey = 'name' | 'products' | 'year-asc' | 'year-desc'
 
 export const ERA_LABELS: Record<number, string> = {
   1: 'Rule-based',

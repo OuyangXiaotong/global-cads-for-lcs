@@ -20,7 +20,7 @@ export function DatabaseView({ companies }: { companies: Company[] }) {
   const reg = searchParams.get('reg') ?? ''
   const region = searchParams.get('region') ?? ''
   const eraF = searchParams.get('era') ?? ''
-  const sort = (searchParams.get('sort') ?? 'name') as 'name' | 'products' | 'year'
+  const sort = (searchParams.get('sort') ?? 'name') as 'name' | 'products' | 'year-asc' | 'year-desc'
 
   function setParam(key: string, value: string) {
     const params = new URLSearchParams(searchParams.toString())
@@ -39,7 +39,8 @@ export function DatabaseView({ companies }: { companies: Company[] }) {
     })
     if (sort === 'name') data = [...data].sort((a, b) => a.name.localeCompare(b.name))
     else if (sort === 'products') data = [...data].sort((a, b) => b.products.length - a.products.length)
-    else if (sort === 'year') data = [...data].sort((a, b) => firstYear(a.products) - firstYear(b.products))
+    else if (sort === 'year-asc') data = [...data].sort((a, b) => firstYear(a.products) - firstYear(b.products))
+    else if (sort === 'year-desc') data = [...data].sort((a, b) => firstYear(b.products) - firstYear(a.products))
     return data
   }, [companies, q, reg, region, eraF, sort])
 
@@ -120,7 +121,8 @@ export function DatabaseView({ companies }: { companies: Company[] }) {
         <select value={sort} onChange={e => setParam('sort', e.target.value)} style={selectStyle}>
           <option value="name">Company A → Z</option>
           <option value="products">Most products</option>
-          <option value="year">Earliest approval</option>
+          <option value="year-asc">Earliest FDA approval</option>
+          <option value="year-desc">Latest FDA approval</option>
         </select>
         <span style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--ink3)', marginLeft: 'auto', whiteSpace: 'nowrap' }}>
           {filtered.length} companies · {totalProds} products

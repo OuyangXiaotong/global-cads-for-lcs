@@ -191,7 +191,8 @@
       <select id="sortSelect">
         <option value="name">Company A → Z</option>
         <option value="products">Most products</option>
-        <option value="year">Earliest approval</option>
+        <option value="year-asc">Earliest FDA approval</option>
+        <option value="year-desc">Latest FDA approval</option>
       </select>
       <span class="result-count" id="resultCount"></span>
     </div>
@@ -399,9 +400,10 @@ function filtered() {
     if (state.era && !co.products.some(p => p.era === +state.era)) return false;
     return true;
   });
-  if (state.sort === 'name')     data.sort((a,b) => a.name.localeCompare(b.name));
+  if (state.sort === 'name')          data.sort((a,b) => a.name.localeCompare(b.name));
   else if (state.sort === 'products') data.sort((a,b) => b.products.length - a.products.length);
-  else if (state.sort === 'year')     data.sort((a,b) => firstYear(a.products) - firstYear(b.products));
+  else if (state.sort === 'year-asc') data.sort((a,b) => firstYear(a.products) - firstYear(b.products));
+  else if (state.sort === 'year-desc') data.sort((a,b) => firstYear(b.products) - firstYear(a.products));
   return data;
 }
 
