@@ -30,7 +30,7 @@
     .nav-inner { max-width: 1152px; margin: 0 auto; padding: 0 32px; height: 48px; display: flex; align-items: center; gap: 24px; }
     .nav-brand { font-family: 'DM Serif Display', serif; font-size: 15px; color: var(--ink); text-decoration: none; }
     .nav-links { display: flex; gap: 20px; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: .06em; }
-    .nav-links a { color: var(--ink3); text-decoration: none; transition: color .15s; }
+    .nav-links a { color: var(--ink3); text-decoration: none; transition: color .15s; cursor: pointer; }
     .nav-links a:hover, .nav-links a.active { color: var(--ink); }
 
     /* ── Main ── */
@@ -105,6 +105,18 @@
     /* ── Empty ── */
     .empty { text-align: center; padding: 48px 24px; color: var(--ink3); font-family: 'DM Mono', monospace; font-size: 13px; }
 
+    /* ── Analytics ── */
+    .an-summary { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--ink3); margin-bottom: 24px; }
+    .an-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 16px; }
+    .chart-card { border: 1px solid var(--rule); border-radius: 10px; padding: 20px 24px 12px; background: var(--bg); }
+    .chart-title { font-family: 'DM Serif Display', serif; font-size: 17px; font-weight: 400; margin-bottom: 16px; color: var(--ink); }
+    .donut-wrap { display: flex; align-items: center; gap: 32px; }
+    .donut-legend { display: flex; flex-direction: column; gap: 14px; }
+    .donut-item { display: flex; align-items: center; gap: 10px; }
+    .donut-swatch { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+    .donut-label { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink2); }
+    .donut-val { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--ink); margin-left: 6px; }
+
     /* ── Footer ── */
     footer { margin-top: 56px; padding-top: 28px; border-top: 1px solid var(--rule); display: flex; align-items: flex-start; gap: 32px; flex-wrap: wrap; }
     .ft-text { font-size: 12px; color: var(--ink3); line-height: 1.7; max-width: 520px; font-weight: 300; }
@@ -118,6 +130,7 @@
       main, .nav-inner { padding-left: 16px; padding-right: 16px; }
       .hd-year { display: none; }
       .co-meta .era-bar { display: none; }
+      .an-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -127,7 +140,8 @@
   <div class="nav-inner">
     <span class="nav-brand">LCS CAD</span>
     <div class="nav-links">
-      <a href="#" class="active">DATABASE</a>
+      <a id="tabDatabase" class="active" onclick="switchTab('database');return false">DATABASE</a>
+      <a id="tabAnalytics" onclick="switchTab('analytics');return false">ANALYTICS</a>
     </div>
   </div>
 </nav>
@@ -142,45 +156,78 @@
     <div class="hd-year">2001<br>–2026</div>
   </header>
 
-  <div class="stats" id="stats"></div>
-  <div class="era-legend" id="eraLegend"></div>
+  <!-- Database view -->
+  <div id="view-database">
+    <div class="stats" id="stats"></div>
+    <div class="era-legend" id="eraLegend"></div>
 
-  <div class="controls">
-    <div class="search-wrap">
-      <svg class="s-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      <input type="text" id="searchInput" placeholder="Search companies or products…">
+    <div class="controls">
+      <div class="search-wrap">
+        <svg class="s-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="searchInput" placeholder="Search companies or products…">
+      </div>
+      <select id="regFilter">
+        <option value="">All clearances</option>
+        <option value="fda">FDA cleared</option>
+        <option value="ce">CE marked only</option>
+        <option value="both">FDA + CE</option>
+      </select>
+      <select id="regionFilter">
+        <option value="">All regions</option>
+        <option value="AU">Australia</option>
+        <option value="AT">Austria</option>
+        <option value="CN">China</option>
+        <option value="FR">France</option>
+        <option value="DE">Germany</option>
+        <option value="IL">Israel</option>
+        <option value="JP">Japan</option>
+        <option value="LT">Lithuania</option>
+        <option value="NL">Netherlands</option>
+        <option value="PT">Portugal</option>
+        <option value="KR">South Korea</option>
+        <option value="GB">United Kingdom</option>
+        <option value="US">United States</option>
+      </select>
+      <select id="sortSelect">
+        <option value="name">Company A → Z</option>
+        <option value="products">Most products</option>
+        <option value="year">Earliest approval</option>
+      </select>
+      <span class="result-count" id="resultCount"></span>
     </div>
-    <select id="regFilter">
-      <option value="">All clearances</option>
-      <option value="fda">FDA cleared</option>
-      <option value="ce">CE marked only</option>
-      <option value="both">FDA + CE</option>
-    </select>
-    <select id="regionFilter">
-      <option value="">All regions</option>
-      <option value="AU">Australia</option>
-      <option value="AT">Austria</option>
-      <option value="CN">China</option>
-      <option value="FR">France</option>
-      <option value="DE">Germany</option>
-      <option value="IL">Israel</option>
-      <option value="JP">Japan</option>
-      <option value="LT">Lithuania</option>
-      <option value="NL">Netherlands</option>
-      <option value="PT">Portugal</option>
-      <option value="KR">South Korea</option>
-      <option value="GB">United Kingdom</option>
-      <option value="US">United States</option>
-    </select>
-    <select id="sortSelect">
-      <option value="name">Company A → Z</option>
-      <option value="products">Most products</option>
-      <option value="year">Earliest approval</option>
-    </select>
-    <span class="result-count" id="resultCount"></span>
+
+    <div class="cards" id="cards"></div>
   </div>
 
-  <div class="cards" id="cards"></div>
+  <!-- Analytics view -->
+  <div id="view-analytics" style="display:none">
+    <p class="an-summary" id="an-summary"></p>
+    <div class="an-grid">
+      <div class="chart-card">
+        <div class="chart-title">FDA Approvals / CE Marks per Year</div>
+        <div id="chart-year"></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Cumulative Products Over Time</div>
+        <div id="chart-cumulative"></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Products by Region</div>
+        <div id="chart-region"></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Products by AI Era</div>
+        <div id="chart-era"></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Clearance Breakdown</div>
+        <div class="donut-wrap">
+          <div id="chart-clearance-donut" style="flex-shrink:0"></div>
+          <div class="donut-legend" id="chart-clearance-legend"></div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <footer>
     <p class="ft-text">
@@ -200,6 +247,7 @@ const ERA_YEARS  = {1:'2001–2009', 2:'2010–2016', 3:'2017–2022', 4:'2023�
 const ERA_COLORS = {1:'#5F5E5A', 2:'#185FA5', 3:'#2D6A1F', 4:'#8B3A1A'};
 const FLAG = {US:'🇺🇸', DE:'🇩🇪', NL:'🇳🇱', FR:'🇫🇷', AT:'🇦🇹', LT:'🇱🇹', PT:'🇵🇹', GB:'🇬🇧', KR:'🇰🇷', CN:'🇨🇳', JP:'🇯🇵', AU:'🇦🇺', IL:'🇮🇱'};
 const REGION_NAMES = {US:'United States', DE:'Germany', NL:'Netherlands', FR:'France', AT:'Austria', LT:'Lithuania', PT:'Portugal', GB:'United Kingdom', KR:'South Korea', CN:'China', JP:'Japan', AU:'Australia', IL:'Israel'};
+const CHART_COLORS = ['#185FA5','#2D6A1F','#8B3A1A','#5F5E5A','#7A4F0A','#1A6B3A','#9A968F','#1A4A8A','#5A2E6B','#A03020','#2E6B5A','#6B5A2E','#3A5A8B'];
 
 // ── Data ─────────────────────────────────────────────────────────────────────
 const COMPANIES = [
@@ -336,6 +384,7 @@ function firstYear(products) {
   return ys.length ? Math.min(...ys) : 9999;
 }
 function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function n2(v) { return v.toFixed(2); }
 
 // ── Filter & sort ─────────────────────────────────────────────────────────────
 function filtered() {
@@ -461,6 +510,186 @@ document.getElementById('searchInput').addEventListener('input',  e => { state.q
 document.getElementById('regFilter')  .addEventListener('change', e => { state.reg    = e.target.value; render(); });
 document.getElementById('regionFilter').addEventListener('change',e => { state.region = e.target.value; render(); });
 document.getElementById('sortSelect') .addEventListener('change', e => { state.sort   = e.target.value; render(); });
+
+// ── Tab switching ─────────────────────────────────────────────────────────────
+function switchTab(tab) {
+  document.getElementById('view-database').style.display  = tab === 'database'  ? '' : 'none';
+  document.getElementById('view-analytics').style.display = tab === 'analytics' ? '' : 'none';
+  document.getElementById('tabDatabase').classList.toggle('active',  tab === 'database');
+  document.getElementById('tabAnalytics').classList.toggle('active', tab === 'analytics');
+  if (tab === 'analytics') initAnalytics();
+}
+
+// ── Analytics data ────────────────────────────────────────────────────────────
+function computeAnalytics() {
+  const allP = COMPANIES.flatMap(co => co.products);
+
+  const byYearMap = {};
+  allP.filter(p => p.year).forEach(p => { byYearMap[p.year] = (byYearMap[p.year]||0) + 1; });
+  const approvalsByYear = Object.entries(byYearMap).map(([y,c]) => ({year:+y, count:c})).sort((a,b) => a.year-b.year);
+
+  let running = 0;
+  const cumulativeByYear = approvalsByYear.map(d => { running += d.count; return {year:d.year, total:running}; });
+
+  const byRegionMap = {};
+  COMPANIES.forEach(co => { byRegionMap[co.region] = (byRegionMap[co.region]||0) + co.products.length; });
+  const byRegionData = Object.entries(byRegionMap).map(([r,c]) => ({region:r, count:c})).sort((a,b) => b.count-a.count);
+
+  const byEraMap = {};
+  allP.forEach(p => { byEraMap[p.era] = (byEraMap[p.era]||0) + 1; });
+  const byEraData = [1,2,3,4].map(e => ({era:e, count:byEraMap[e]||0}));
+
+  const fdaOnly = allP.filter(p => p.fda && !p.ce).length;
+  const ceOnly  = allP.filter(p => !p.fda && p.ce).length;
+  const both    = allP.filter(p => p.fda && p.ce).length;
+  const clearanceData = [
+    {name:'FDA only', value:fdaOnly, color:'#185FA5'},
+    {name:'CE only',  value:ceOnly,  color:'#2D6A1F'},
+    {name:'FDA + CE', value:both,    color:'#7A4F0A'},
+  ];
+
+  return {approvalsByYear, cumulativeByYear, byRegionData, byEraData, clearanceData, allP};
+}
+
+// ── SVG chart helpers ─────────────────────────────────────────────────────────
+function hGrid(pad, cH, cW, maxV, steps) {
+  let out = '';
+  for (let i = 0; i <= steps; i++) {
+    const y = pad.t + cH * (1 - i/steps);
+    out += `<line x1="${n2(pad.l)}" y1="${n2(y)}" x2="${n2(pad.l+cW)}" y2="${n2(y)}" stroke="#D4CFC6" stroke-width="1"/>`;
+    if (i > 0) out += `<text x="${n2(pad.l-5)}" y="${n2(y+4)}" text-anchor="end" font-size="9" fill="#9A968F" font-family="'DM Mono',monospace">${Math.round(maxV*i/steps)}</text>`;
+  }
+  return out;
+}
+
+function renderBarChart(containerId, data, xKey, yKey, colorFn, labelFn) {
+  const W=500, H=220, pad={t:12,r:12,b:36,l:34};
+  const cW=W-pad.l-pad.r, cH=H-pad.t-pad.b;
+  const maxV = Math.max(...data.map(d=>d[yKey]), 1);
+  const n = data.length;
+  const bw = Math.max(4, (cW/n)*0.65);
+
+  let out = `<svg viewBox="0 0 ${W} ${H}" width="100%" style="display:block;overflow:visible">`;
+  out += hGrid(pad, cH, cW, maxV, 4);
+
+  data.forEach((d, i) => {
+    const cx = pad.l + (i+0.5)*cW/n;
+    const barH = (d[yKey]/maxV)*cH;
+    const y = pad.t + cH - barH;
+    const lbl = labelFn ? labelFn(d) : String(d[xKey]);
+    const showLabel = n <= 6 || (typeof d[xKey] === 'number' && d[xKey] % 5 === 0);
+    out += `<rect x="${n2(cx-bw/2)}" y="${n2(y)}" width="${n2(bw)}" height="${n2(barH)}" fill="${colorFn(d,i)}" rx="2"><title>${lbl}: ${d[yKey]}</title></rect>`;
+    if (showLabel) out += `<text x="${n2(cx)}" y="${H-4}" text-anchor="middle" font-size="9" fill="#9A968F" font-family="'DM Mono',monospace">${lbl}</text>`;
+  });
+  out += '</svg>';
+  document.getElementById(containerId).innerHTML = out;
+}
+
+function renderLineChart(containerId, data, xKey, yKey) {
+  const W=500, H=220, pad={t:12,r:12,b:36,l:42};
+  const cW=W-pad.l-pad.r, cH=H-pad.t-pad.b;
+  const maxV = Math.max(...data.map(d=>d[yKey]), 1);
+  const n = data.length;
+
+  let out = `<svg viewBox="0 0 ${W} ${H}" width="100%" style="display:block;overflow:visible">`;
+  out += hGrid(pad, cH, cW, maxV, 4);
+
+  const pts = data.map((d, i) => {
+    const x = n <= 1 ? pad.l + cW/2 : pad.l + i/(n-1)*cW;
+    const y = pad.t + cH - (d[yKey]/maxV)*cH;
+    return {x, y, d};
+  });
+
+  out += `<polyline points="${pts.map(p=>`${n2(p.x)},${n2(p.y)}`).join(' ')}" fill="none" stroke="#185FA5" stroke-width="2" stroke-linejoin="round"/>`;
+
+  pts.forEach(({x, d}) => {
+    const showLabel = n <= 6 || (typeof d[xKey] === 'number' && d[xKey] % 5 === 0);
+    if (showLabel) out += `<text x="${n2(x)}" y="${H-4}" text-anchor="middle" font-size="9" fill="#9A968F" font-family="'DM Mono',monospace">${d[xKey]}</text>`;
+  });
+  out += '</svg>';
+  document.getElementById(containerId).innerHTML = out;
+}
+
+function renderHBarChart(containerId, data, xKey, yKey, colorFn) {
+  const rowH = 24, n = data.length;
+  const W=500, pad={t:8,r:48,b:8,l:92};
+  const H = pad.t + n*rowH + pad.b;
+  const cW = W - pad.l - pad.r;
+  const maxV = Math.max(...data.map(d=>d[yKey]), 1);
+
+  let out = `<svg viewBox="0 0 ${W} ${H}" width="100%" style="display:block">`;
+
+  data.forEach((d, i) => {
+    const y = pad.t + i*rowH;
+    const barW = (d[yKey]/maxV)*cW;
+    out += `<rect x="${pad.l}" y="${n2(y+4)}" width="${n2(barW)}" height="${rowH-8}" fill="${colorFn(d,i)}" rx="2"><title>${REGION_NAMES[d[xKey]]||d[xKey]}: ${d[yKey]}</title></rect>`;
+    const flag = FLAG[d[xKey]] || '';
+    const rname = REGION_NAMES[d[xKey]] || d[xKey];
+    out += `<text x="${pad.l-6}" y="${n2(y+rowH/2+4)}" text-anchor="end" font-size="10" fill="#5A5750" font-family="'DM Sans',sans-serif">${flag} ${rname}</text>`;
+    out += `<text x="${n2(pad.l+barW+6)}" y="${n2(y+rowH/2+4)}" font-size="10" fill="#9A968F" font-family="'DM Mono',monospace">${d[yKey]}</text>`;
+  });
+
+  out += '</svg>';
+  document.getElementById(containerId).innerHTML = out;
+}
+
+function renderDonutChart(donutId, legendId, data, valueKey) {
+  const total = data.reduce((s,d) => s+d[valueKey], 0);
+  const R=72, r=46, cx=90, cy=90, W=180, H=180;
+  let angle = -Math.PI/2;
+  let paths = '';
+  const GAP = 0.03;
+
+  data.forEach(d => {
+    if (d[valueKey] === 0) return;
+    const sweep = (d[valueKey]/total) * Math.PI * 2;
+    const a0 = angle + GAP/2, a1 = angle + sweep - GAP/2;
+    const x1=cx+R*Math.cos(a0), y1=cy+R*Math.sin(a0);
+    const x2=cx+R*Math.cos(a1), y2=cy+R*Math.sin(a1);
+    const x3=cx+r*Math.cos(a1), y3=cy+r*Math.sin(a1);
+    const x4=cx+r*Math.cos(a0), y4=cy+r*Math.sin(a0);
+    const large = sweep > Math.PI ? 1 : 0;
+    paths += `<path d="M ${n2(x1)} ${n2(y1)} A ${R} ${R} 0 ${large} 1 ${n2(x2)} ${n2(y2)} L ${n2(x3)} ${n2(y3)} A ${r} ${r} 0 ${large} 0 ${n2(x4)} ${n2(y4)} Z" fill="${d.color}"><title>${d.name}: ${d[valueKey]}</title></path>`;
+    angle += sweep;
+  });
+
+  document.getElementById(donutId).innerHTML =
+    `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="display:block">${paths}</svg>`;
+
+  document.getElementById(legendId).innerHTML = data.map(d => `
+    <div class="donut-item">
+      <div class="donut-swatch" style="background:${d.color}"></div>
+      <span class="donut-label">${d.name}</span>
+      <span class="donut-val">${d[valueKey]}</span>
+    </div>`).join('');
+}
+
+// ── Analytics init (lazy) ─────────────────────────────────────────────────────
+let analyticsInited = false;
+function initAnalytics() {
+  if (analyticsInited) return;
+  analyticsInited = true;
+
+  const {approvalsByYear, cumulativeByYear, byRegionData, byEraData, clearanceData, allP} = computeAnalytics();
+  const regions = new Set(COMPANIES.map(c => c.region)).size;
+
+  document.getElementById('an-summary').textContent =
+    `${COMPANIES.length} companies · ${allP.length} products across ${regions} regions`;
+
+  renderBarChart('chart-year', approvalsByYear, 'year', 'count',
+    () => '#185FA5');
+
+  renderLineChart('chart-cumulative', cumulativeByYear, 'year', 'total');
+
+  renderHBarChart('chart-region', byRegionData, 'region', 'count',
+    (d, i) => CHART_COLORS[i % CHART_COLORS.length]);
+
+  renderBarChart('chart-era', byEraData, 'era', 'count',
+    d => ERA_COLORS[d.era],
+    d => `Era ${d.era} — ${ERA_LABELS[d.era]}`);
+
+  renderDonutChart('chart-clearance-donut', 'chart-clearance-legend', clearanceData, 'value');
+}
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
 initStats();
