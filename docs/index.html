@@ -158,14 +158,19 @@
     </select>
     <select id="regionFilter">
       <option value="">All regions</option>
-      <option value="US">United States</option>
-      <option value="EU">Europe</option>
-      <option value="FR">France</option>
-      <option value="KR">South Korea</option>
-      <option value="CN">China</option>
-      <option value="JP">Japan</option>
-      <option value="IL">Israel</option>
       <option value="AU">Australia</option>
+      <option value="AT">Austria</option>
+      <option value="CN">China</option>
+      <option value="FR">France</option>
+      <option value="DE">Germany</option>
+      <option value="IL">Israel</option>
+      <option value="JP">Japan</option>
+      <option value="LT">Lithuania</option>
+      <option value="NL">Netherlands</option>
+      <option value="PT">Portugal</option>
+      <option value="KR">South Korea</option>
+      <option value="GB">United Kingdom</option>
+      <option value="US">United States</option>
     </select>
     <select id="sortSelect">
       <option value="name">Company A → Z</option>
@@ -193,8 +198,8 @@
 const ERA_LABELS = {1:'Rule-based', 2:'ML / Radiomics', 3:'Deep learning', 4:'VLM / Multimodal'};
 const ERA_YEARS  = {1:'2001–2009', 2:'2010–2016', 3:'2017–2022', 4:'2023–2026'};
 const ERA_COLORS = {1:'#5F5E5A', 2:'#185FA5', 3:'#2D6A1F', 4:'#8B3A1A'};
-const FLAG = {US:'🇺🇸', EU:'🇪🇺', KR:'🇰🇷', CN:'🇨🇳', JP:'🇯🇵', AU:'🇦🇺', IL:'🇮🇱', FR:'🇫🇷'};
-const REGION_NAMES = {US:'United States', EU:'Europe', KR:'South Korea', CN:'China', JP:'Japan', AU:'Australia', IL:'Israel', FR:'France'};
+const FLAG = {US:'🇺🇸', DE:'🇩🇪', NL:'🇳🇱', FR:'🇫🇷', AT:'🇦🇹', LT:'🇱🇹', PT:'🇵🇹', GB:'🇬🇧', KR:'🇰🇷', CN:'🇨🇳', JP:'🇯🇵', AU:'🇦🇺', IL:'🇮🇱'};
+const REGION_NAMES = {US:'United States', DE:'Germany', NL:'Netherlands', FR:'France', AT:'Austria', LT:'Lithuania', PT:'Portugal', GB:'United Kingdom', KR:'South Korea', CN:'China', JP:'Japan', AU:'Australia', IL:'Israel'};
 
 // ── Data ─────────────────────────────────────────────────────────────────────
 const COMPANIES = [
@@ -203,7 +208,7 @@ const COMPANIES = [
   {name:'R2 Technology', region:'US', products:[
     {name:'ImageChecker-CT Workstation', fda:'K023003', year:2002, ce:false, era:1},
     {name:'ImageChecker-CT Software', fda:'K041380', year:2004, ce:false, era:1}]},
-  {name:'Siemens / Siemens Healthineers', region:'EU', products:[
+  {name:'Siemens / Siemens Healthineers', region:'DE', products:[
     {name:'LungCare CT Software Package', fda:'K033374', year:2003, ce:true, era:1},
     {name:'syngo Application Software', fda:'K170747', year:2017, ce:true, era:3},
     {name:'AI-Rad Companion Engine', fda:'K183272', year:2019, ce:true, era:3},
@@ -234,13 +239,13 @@ const COMPANIES = [
   {name:'Body Vision Medical / BodyVision Medical', region:'IL', products:[
     {name:'Lung Vision', fda:'K163622', year:2017, ce:false, era:3},
     {name:'LungVision', fda:'K240943', year:2024, ce:false, era:3}]},
-  {name:'Philips Medical Systems / Healthcare', region:'EU', products:[
+  {name:'Philips Medical Systems / Healthcare', region:'NL', products:[
     {name:'Illumeo System', fda:'K173588', year:2018, ce:true, era:3},
     {name:'QLAB Advanced Quantification', fda:'K191647', year:2019, ce:true, era:3}]},
   {name:'Arterys', region:'US', products:[
     {name:'Arterys Oncology DL', fda:'K173542', year:2018, ce:false, era:3},
     {name:'Arterys MICA', fda:'K182034', year:2018, ce:false, era:3}]},
-  {name:'Thirona', region:'EU', products:[
+  {name:'Thirona', region:'NL', products:[
     {name:'LungQ Software', fda:'K173821', year:2018, ce:true, era:3},
     {name:'LungQ v3.0.0', fda:'K232412', year:2024, ce:true, era:3},
     {name:'LungQ 4', fda:'K250766', year:2025, ce:true, era:4},
@@ -254,7 +259,7 @@ const COMPANIES = [
     {name:'Med-LungCT AI', fda:null, year:null, ce:true, era:3}]},
   {name:'Merge Healthcare', region:'US', products:[
     {name:'Merge PACS', fda:'K192455', year:2019, ce:false, era:3}]},
-  {name:'Optellum', region:'EU', products:[
+  {name:'Optellum', region:'GB', products:[
     {name:'Optellum Virtual Nodule Clinic', fda:'K202300', year:2021, ce:true, era:3},
     {name:'Virtual Nodule Clinic', fda:null, year:null, ce:true, era:3}]},
   {name:'Change Healthcare', region:'US', products:[
@@ -285,13 +290,13 @@ const COMPANIES = [
   {name:'United Imaging Intelligence', region:'CN', products:[
     {name:'CT Pulmonary Nodules 3D Analysis', fda:null, year:null, ce:true, era:3},
     {name:'uAI-Discover Chest CT', fda:null, year:null, ce:true, era:4}]},
-  {name:'contextflow', region:'EU', products:[
+  {name:'contextflow', region:'AT', products:[
     {name:'contextflow ADVANCE Chest CT', fda:null, year:null, ce:true, era:3}]},
   {name:'HY Medical', region:'CN', products:[
     {name:'CT AI Lung Nodule Detection', fda:null, year:null, ce:true, era:3}]},
-  {name:'Oxipit', region:'EU', products:[
+  {name:'Oxipit', region:'LT', products:[
     {name:'CT Eye', fda:null, year:null, ce:true, era:3}]},
-  {name:'IMedis', region:'EU', products:[
+  {name:'IMedis', region:'IL', products:[
     {name:'Duali-Q', fda:null, year:null, ce:true, era:3}]},
   {name:'Harrison.ai', region:'AU', products:[
     {name:'Harrison CT Chest', fda:null, year:null, ce:true, era:4}]},
@@ -299,9 +304,9 @@ const COMPANIES = [
     {name:'JLD-01K', fda:null, year:null, ce:true, era:3}]},
   {name:'Monitor Corporation', region:'JP', products:[
     {name:'LuCAS-Plus', fda:null, year:null, ce:true, era:3}]},
-  {name:'DeepHealth', region:'EU', products:[
+  {name:'DeepHealth', region:'NL', products:[
     {name:'Lung Check (Veye Lung Nodules)', fda:null, year:null, ce:true, era:3}]},
-  {name:'Rayscape', region:'EU', products:[
+  {name:'Rayscape', region:'PT', products:[
     {name:'Lung CT', fda:null, year:null, ce:true, era:3}]},
   {name:'GLEAMER', region:'FR', products:[
     {name:'LungCT', fda:null, year:null, ce:true, era:3}]},
@@ -313,7 +318,7 @@ const COMPANIES = [
     {name:'TechCare Chest', fda:null, year:null, ce:true, era:3}]},
   {name:'Mitsubishi Space Software', region:'JP', products:[
     {name:'Truedia', fda:null, year:null, ce:true, era:3}]},
-  {name:'MeVis Medical Solutions', region:'EU', products:[
+  {name:'MeVis Medical Solutions', region:'DE', products:[
     {name:'Veolity', fda:null, year:null, ce:true, era:3}]},
 ];
 

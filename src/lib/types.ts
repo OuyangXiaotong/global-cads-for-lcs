@@ -1,4 +1,4 @@
-export type Region = 'US' | 'EU' | 'KR' | 'CN' | 'JP' | 'AU' | 'IL' | 'FR'
+export type Region = 'US' | 'DE' | 'NL' | 'FR' | 'AT' | 'LT' | 'PT' | 'GB' | 'KR' | 'CN' | 'JP' | 'AU' | 'IL'
 export type RegFilter = 'fda' | 'ce' | 'both' | ''
 export type SortKey = 'name' | 'products' | 'year'
 
@@ -24,14 +24,15 @@ export const ERA_COLORS: Record<number, string> = {
 }
 
 export const FLAG: Record<string, string> = {
-  US: '🇺🇸', EU: '🇪🇺', KR: '🇰🇷', CN: '🇨🇳',
-  JP: '🇯🇵', AU: '🇦🇺', IL: '🇮🇱', FR: '🇫🇷',
+  US: '🇺🇸', DE: '🇩🇪', NL: '🇳🇱', FR: '🇫🇷', AT: '🇦🇹',
+  LT: '🇱🇹', PT: '🇵🇹', GB: '🇬🇧', KR: '🇰🇷', CN: '🇨🇳',
+  JP: '🇯🇵', AU: '🇦🇺', IL: '🇮🇱',
 }
 
 export const REGION_NAMES: Record<string, string> = {
-  US: 'United States', EU: 'Europe', KR: 'South Korea',
-  CN: 'China', JP: 'Japan', AU: 'Australia',
-  IL: 'Israel', FR: 'France',
+  US: 'United States', DE: 'Germany', NL: 'Netherlands', FR: 'France',
+  AT: 'Austria', LT: 'Lithuania', PT: 'Portugal', GB: 'United Kingdom',
+  KR: 'South Korea', CN: 'China', JP: 'Japan', AU: 'Australia', IL: 'Israel',
 }
 
 export function regType(products: { fdaNumber: string | null; ce: boolean }[]) {

@@ -9,7 +9,7 @@ import { regType, firstYear, REGION_NAMES, ERA_COLORS, ERA_LABELS, ERA_YEARS } f
 type Product = { id: number; name: string; fdaNumber: string | null; year: number | null; ce: boolean; era: number }
 type Company = { id: number; name: string; region: string; products: Product[] }
 
-const REGIONS = ['US', 'EU', 'FR', 'KR', 'CN', 'JP', 'IL', 'AU']
+const REGIONS = ['AU', 'AT', 'CN', 'FR', 'DE', 'IL', 'JP', 'LT', 'NL', 'PT', 'KR', 'GB', 'US']
 
 export function DatabaseView({ companies }: { companies: Company[] }) {
   const searchParams = useSearchParams()

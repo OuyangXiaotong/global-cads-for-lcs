@@ -12,7 +12,7 @@ const DATA = [
   { co: 'R2 Technology', region: 'US', products: [
     { name: 'ImageChecker-CT Workstation', fda: 'K023003', year: 2002, ce: false, era: 1 },
     { name: 'ImageChecker-CT Software', fda: 'K041380', year: 2004, ce: false, era: 1 }]},
-  { co: 'Siemens / Siemens Healthineers', region: 'EU', products: [
+  { co: 'Siemens / Siemens Healthineers', region: 'DE', products: [
     { name: 'LungCare CT Software Package', fda: 'K033374', year: 2003, ce: true, era: 1 },
     { name: 'syngo Application Software', fda: 'K170747', year: 2017, ce: true, era: 3 },
     { name: 'AI-Rad Companion Engine', fda: 'K183272', year: 2019, ce: true, era: 3 },
@@ -43,13 +43,13 @@ const DATA = [
   { co: 'Body Vision Medical / BodyVision Medical', region: 'IL', products: [
     { name: 'Lung Vision', fda: 'K163622', year: 2017, ce: false, era: 3 },
     { name: 'LungVision', fda: 'K240943', year: 2024, ce: false, era: 3 }]},
-  { co: 'Philips Medical Systems / Healthcare', region: 'EU', products: [
+  { co: 'Philips Medical Systems / Healthcare', region: 'NL', products: [
     { name: 'Illumeo System', fda: 'K173588', year: 2018, ce: true, era: 3 },
     { name: 'QLAB Advanced Quantification', fda: 'K191647', year: 2019, ce: true, era: 3 }]},
   { co: 'Arterys', region: 'US', products: [
     { name: 'Arterys Oncology DL', fda: 'K173542', year: 2018, ce: false, era: 3 },
     { name: 'Arterys MICA', fda: 'K182034', year: 2018, ce: false, era: 3 }]},
-  { co: 'Thirona', region: 'EU', products: [
+  { co: 'Thirona', region: 'NL', products: [
     { name: 'LungQ Software', fda: 'K173821', year: 2018, ce: true, era: 3 },
     { name: 'LungQ v3.0.0', fda: 'K232412', year: 2024, ce: true, era: 3 },
     { name: 'LungQ 4', fda: 'K250766', year: 2025, ce: true, era: 4 },
@@ -63,7 +63,7 @@ const DATA = [
     { name: 'Med-LungCT AI', fda: null, year: null, ce: true, era: 3 }]},
   { co: 'Merge Healthcare', region: 'US', products: [
     { name: 'Merge PACS', fda: 'K192455', year: 2019, ce: false, era: 3 }]},
-  { co: 'Optellum', region: 'EU', products: [
+  { co: 'Optellum', region: 'GB', products: [
     { name: 'Optellum Virtual Nodule Clinic', fda: 'K202300', year: 2021, ce: true, era: 3 },
     { name: 'Virtual Nodule Clinic', fda: null, year: null, ce: true, era: 3 }]},
   { co: 'Change Healthcare', region: 'US', products: [
@@ -94,13 +94,13 @@ const DATA = [
   { co: 'United Imaging Intelligence', region: 'CN', products: [
     { name: 'CT Pulmonary Nodules 3D Analysis', fda: null, year: null, ce: true, era: 3 },
     { name: 'uAI-Discover Chest CT', fda: null, year: null, ce: true, era: 4 }]},
-  { co: 'contextflow', region: 'EU', products: [
+  { co: 'contextflow', region: 'AT', products: [
     { name: 'contextflow ADVANCE Chest CT', fda: null, year: null, ce: true, era: 3 }]},
   { co: 'HY Medical', region: 'CN', products: [
     { name: 'CT AI Lung Nodule Detection', fda: null, year: null, ce: true, era: 3 }]},
-  { co: 'Oxipit', region: 'EU', products: [
+  { co: 'Oxipit', region: 'LT', products: [
     { name: 'CT Eye', fda: null, year: null, ce: true, era: 3 }]},
-  { co: 'IMedis', region: 'EU', products: [
+  { co: 'IMedis', region: 'IL', products: [
     { name: 'Duali-Q', fda: null, year: null, ce: true, era: 3 }]},
   { co: 'Harrison.ai', region: 'AU', products: [
     { name: 'Harrison CT Chest', fda: null, year: null, ce: true, era: 4 }]},
@@ -108,9 +108,9 @@ const DATA = [
     { name: 'JLD-01K', fda: null, year: null, ce: true, era: 3 }]},
   { co: 'Monitor Corporation', region: 'JP', products: [
     { name: 'LuCAS-Plus', fda: null, year: null, ce: true, era: 3 }]},
-  { co: 'DeepHealth', region: 'EU', products: [
+  { co: 'DeepHealth', region: 'NL', products: [
     { name: 'Lung Check (Veye Lung Nodules)', fda: null, year: null, ce: true, era: 3 }]},
-  { co: 'Rayscape', region: 'EU', products: [
+  { co: 'Rayscape', region: 'PT', products: [
     { name: 'Lung CT', fda: null, year: null, ce: true, era: 3 }]},
   { co: 'GLEAMER', region: 'FR', products: [
     { name: 'LungCT', fda: null, year: null, ce: true, era: 3 }]},
@@ -122,7 +122,7 @@ const DATA = [
     { name: 'TechCare Chest', fda: null, year: null, ce: true, era: 3 }]},
   { co: 'Mitsubishi Space Software', region: 'JP', products: [
     { name: 'Truedia', fda: null, year: null, ce: true, era: 3 }]},
-  { co: 'MeVis Medical Solutions', region: 'EU', products: [
+  { co: 'MeVis Medical Solutions', region: 'DE', products: [
     { name: 'Veolity', fda: null, year: null, ce: true, era: 3 }]},
 ]
 
