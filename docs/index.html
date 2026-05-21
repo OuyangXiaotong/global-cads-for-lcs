@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Global CADs for Lung Cancer Screening — Reference Database</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:     #F5F3EE;
+      --bg2:    #EDEAE3;
+      --bg3:    #E3DFD6;
+      --ink:    #1A1916;
+      --ink2:   #5A5750;
+      --ink3:   #9A968F;
+      --rule:   #D4CFC6;
+      --fda-bg: #EBF3FF;
+      --fda-ink:#1A4A8A;
+      --ce-bg:  #EBFAF2;
+      --ce-ink: #1A6B3A;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--ink); font-family: 'DM Sans', sans-serif; font-size: 14px; line-height: 1.5; }
+
+    /* ── Nav ── */
+    nav { border-bottom: 1px solid var(--rule); background: var(--bg2); }
+    .nav-inner { max-width: 1152px; margin: 0 auto; padding: 0 32px; height: 48px; display: flex; align-items: center; gap: 24px; }
+    .nav-brand { font-family: 'DM Serif Display', serif; font-size: 15px; color: var(--ink); text-decoration: none; }
+    .nav-links { display: flex; gap: 20px; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: .06em; }
+    .nav-links a { color: var(--ink3); text-decoration: none; transition: color .15s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--ink); }
+
+    /* ── Main ── */
+    main { max-width: 1152px; margin: 0 auto; padding: 0 32px 80px; }
+
+    /* ── Header ── */
+    header { border-bottom: 1px solid var(--rule); padding: 48px 0 40px; margin-bottom: 40px; display: flex; align-items: flex-end; gap: 48px; flex-wrap: wrap; }
+    .hd-text { flex: 1; min-width: 260px; }
+    .eyebrow { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink3); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .eyebrow::before { content: ''; display: inline-block; width: 20px; height: 1px; background: var(--ink3); }
+    h1 { font-family: 'DM Serif Display', serif; font-size: clamp(28px, 4vw, 44px); font-weight: 400; line-height: 1.15; letter-spacing: -.01em; margin-bottom: 14px; }
+    h1 em { font-style: italic; color: var(--ink2); }
+    .hd-desc { font-size: 14px; color: var(--ink2); max-width: 520px; line-height: 1.7; font-weight: 300; }
+    .hd-year { font-family: 'DM Serif Display', serif; font-size: clamp(48px, 8vw, 80px); font-weight: 400; color: var(--bg3); line-height: 1; letter-spacing: -.04em; flex-shrink: 0; user-select: none; }
+
+    /* ── Stats ── */
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 10px; overflow: hidden; margin-bottom: 36px; }
+    .stat { background: var(--bg); padding: 20px 22px; }
+    .stat-n { font-family: 'DM Serif Display', serif; font-size: 36px; font-weight: 400; line-height: 1; margin-bottom: 4px; }
+    .stat-lbl { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink3); letter-spacing: .04em; text-transform: uppercase; }
+
+    /* ── Era legend ── */
+    .era-legend { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .era-chip { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; color: var(--ink2); background: var(--bg2); border: 1px solid var(--rule); border-radius: 100px; padding: 5px 12px; cursor: pointer; user-select: none; transition: background .15s; }
+    .era-chip.active { background: var(--bg3); }
+    .era-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .era-yr { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--ink3); }
+
+    /* ── Controls ── */
+    .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 20px; }
+    .search-wrap { position: relative; flex: 1; min-width: 180px; max-width: 300px; }
+    .s-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--ink3); pointer-events: none; }
+    input[type=text] { width: 100%; padding: 9px 12px 9px 34px; border: 1px solid var(--rule); border-radius: 8px; background: var(--bg); font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--ink); outline: none; }
+    select { padding: 8px 28px 8px 10px; border: 1px solid var(--rule); border-radius: 8px; background: var(--bg); font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--ink); outline: none; cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239A968F' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; }
+    .result-count { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink3); margin-left: auto; white-space: nowrap; }
+
+    /* ── Cards ── */
+    .cards { display: flex; flex-direction: column; gap: 4px; }
+    .card { border: 1px solid var(--rule); border-radius: 10px; overflow: hidden; background: var(--bg); transition: border-color .15s, box-shadow .15s; }
+    .card.open { border-color: var(--ink2); box-shadow: 0 2px 12px rgba(26,25,22,.06); }
+    .card-hd { display: flex; align-items: center; gap: 12px; padding: 12px 16px; cursor: pointer; user-select: none; }
+    .flag { font-size: 20px; flex-shrink: 0; }
+    .co-info { flex: 1; min-width: 0; }
+    .co-name { font-size: 14px; font-weight: 500; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .co-region { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink3); margin-top: 1px; }
+    .co-meta { display: flex; align-items: center; gap: 8px; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
+    .badge { font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; padding: 3px 8px; border-radius: 100px; }
+    .b-fda { background: var(--fda-bg); color: var(--fda-ink); }
+    .b-ce  { background: var(--ce-bg);  color: var(--ce-ink);  }
+    .b-cnt { background: var(--bg2); color: var(--ink2); border: 1px solid var(--rule); }
+    .era-bar { display: flex; height: 4px; width: 40px; border-radius: 2px; overflow: hidden; flex-shrink: 0; }
+    .chevron { flex-shrink: 0; color: var(--ink3); transition: transform .2s; }
+    .card.open .chevron { transform: rotate(180deg); }
+
+    /* ── Product table ── */
+    .card-body { border-top: 1px solid var(--rule); display: none; }
+    .card.open .card-body { display: block; }
+    table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+    thead tr { background: var(--bg2); }
+    th { text-align: left; padding: 8px 18px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink3); font-weight: 500; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+    th:last-child { text-align: right; }
+    td { padding: 9px 18px; color: var(--ink); border-bottom: 1px solid var(--rule); vertical-align: middle; }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: var(--bg2); }
+    .p-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 8px; vertical-align: middle; flex-shrink: 0; }
+    .p-tag { font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; }
+    .fda-link { color: var(--fda-ink); text-decoration: none; font-family: 'DM Mono', monospace; font-size: 11px; }
+    .fda-link:hover { text-decoration: underline; }
+    .yr-cell { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink3); text-align: right; }
+    .dash { color: var(--ink3); font-family: 'DM Mono', monospace; font-size: 11px; }
+
+    /* ── Empty ── */
+    .empty { text-align: center; padding: 48px 24px; color: var(--ink3); font-family: 'DM Mono', monospace; font-size: 13px; }
+
+    /* ── Footer ── */
+    footer { margin-top: 56px; padding-top: 28px; border-top: 1px solid var(--rule); display: flex; align-items: flex-start; gap: 32px; flex-wrap: wrap; }
+    .ft-text { font-size: 12px; color: var(--ink3); line-height: 1.7; max-width: 520px; font-weight: 300; }
+    .ft-text strong { color: var(--ink2); font-weight: 500; }
+    .ft-brand { margin-left: auto; text-align: right; }
+    .ft-name { font-family: 'DM Serif Display', serif; font-size: 15px; color: var(--ink2); }
+    .ft-meta { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--ink3); letter-spacing: .06em; text-transform: uppercase; margin-top: 4px; }
+
+    @media (max-width: 640px) {
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      main, .nav-inner { padding-left: 16px; padding-right: 16px; }
+      .hd-year { display: none; }
+      .co-meta .era-bar { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <span class="nav-brand">LCS CAD</span>
+    <div class="nav-links">
+      <a href="#" class="active">DATABASE</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <header>
+    <div class="hd-text">
+      <div class="eyebrow">Systematic Review · Reference Database</div>
+      <h1>Global Commercial CADs<br>for <em>Lung Cancer Screening</em></h1>
+      <p class="hd-desc">FDA 510(k)/PMA-cleared and CE-marked software devices for pulmonary nodule detection and management. Compiled from regulatory databases and published literature.</p>
+    </div>
+    <div class="hd-year">2001<br>–2026</div>
+  </header>
+
+  <div class="stats" id="stats"></div>
+  <div class="era-legend" id="eraLegend"></div>
+
+  <div class="controls">
+    <div class="search-wrap">
+      <svg class="s-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="searchInput" placeholder="Search companies or products…">
+    </div>
+    <select id="regFilter">
+      <option value="">All clearances</option>
+      <option value="fda">FDA cleared</option>
+      <option value="ce">CE marked only</option>
+      <option value="both">FDA + CE</option>
+    </select>
+    <select id="regionFilter">
+      <option value="">All regions</option>
+      <option value="US">United States</option>
+      <option value="EU">Europe</option>
+      <option value="FR">France</option>
+      <option value="KR">South Korea</option>
+      <option value="CN">China</option>
+      <option value="JP">Japan</option>
+      <option value="IL">Israel</option>
+      <option value="AU">Australia</option>
+    </select>
+    <select id="sortSelect">
+      <option value="name">Company A → Z</option>
+      <option value="products">Most products</option>
+      <option value="year">Earliest approval</option>
+    </select>
+    <span class="result-count" id="resultCount"></span>
+  </div>
+
+  <div class="cards" id="cards"></div>
+
+  <footer>
+    <p class="ft-text">
+      <strong>Data sources:</strong> FDA 510(k)/PMA database (CDRH); European CE-mark AI registries including AIforRadiology.com; published systematic reviews. Products limited to CT-based lung nodule detection and management tools.
+    </p>
+    <div class="ft-brand">
+      <div class="ft-name">LCS CAD Reference Database</div>
+      <div class="ft-meta">Compiled May 2026 · v1.0</div>
+    </div>
+  </footer>
+</main>
+
+<script>
+// ── Constants ────────────────────────────────────────────────────────────────
+const ERA_LABELS = {1:'Rule-based', 2:'ML / Radiomics', 3:'Deep learning', 4:'VLM / Multimodal'};
+const ERA_YEARS  = {1:'2001–2009', 2:'2010–2016', 3:'2017–2022', 4:'2023–2026'};
+const ERA_COLORS = {1:'#5F5E5A', 2:'#185FA5', 3:'#2D6A1F', 4:'#8B3A1A'};
+const FLAG = {US:'🇺🇸', EU:'🇪🇺', KR:'🇰🇷', CN:'🇨🇳', JP:'🇯🇵', AU:'🇦🇺', IL:'🇮🇱', FR:'🇫🇷'};
+const REGION_NAMES = {US:'United States', EU:'Europe', KR:'South Korea', CN:'China', JP:'Japan', AU:'Australia', IL:'Israel', FR:'France'};
+
+// ── Data ─────────────────────────────────────────────────────────────────────
+const COMPANIES = [
+  {name:'Deus Technologies', region:'US', products:[
+    {name:'RapidScreen RS-2000', fda:'P000041', year:2001, ce:false, era:1}]},
+  {name:'R2 Technology', region:'US', products:[
+    {name:'ImageChecker-CT Workstation', fda:'K023003', year:2002, ce:false, era:1},
+    {name:'ImageChecker-CT Software', fda:'K041380', year:2004, ce:false, era:1}]},
+  {name:'Siemens / Siemens Healthineers', region:'EU', products:[
+    {name:'LungCare CT Software Package', fda:'K033374', year:2003, ce:true, era:1},
+    {name:'syngo Application Software', fda:'K170747', year:2017, ce:true, era:3},
+    {name:'AI-Rad Companion Engine', fda:'K183272', year:2019, ce:true, era:3},
+    {name:'AI-Rad Companion Pulmonary', fda:'K183271', year:2019, ce:true, era:3},
+    {name:'AI-Rad Companion Chest CT', fda:null, year:null, ce:true, era:3},
+    {name:'AI-Rad Companion Engine v2', fda:'K193294', year:2020, ce:true, era:3},
+    {name:'syngo.CT Lung CAD', fda:'K193216', year:2020, ce:true, era:3},
+    {name:'syngo.CT Lung CAD VD30', fda:'K231157', year:2023, ce:true, era:3},
+    {name:'Syngo Carbon Clinicals', fda:'K251059', year:2025, ce:true, era:4}]},
+  {name:'GE Medical Systems / GE Healthcare', region:'US', products:[
+    {name:'Advanced Lung Analysis II / Lung VCAR', fda:'K042694', year:2004, ce:false, era:1},
+    {name:'Thoracic VCAR', fda:'K103480', year:2011, ce:false, era:2}]},
+  {name:'Median Technologies', region:'FR', products:[
+    {name:'LMS-LUNG/TRACK', fda:'K070868', year:2007, ce:true, era:1},
+    {name:'eyonis LCS 1.0', fda:'K251474', year:2026, ce:true, era:4}]},
+  {name:'Toshiba Medical Systems', region:'JP', products:[
+    {name:'Lung Volume Analysis', fda:'K113715', year:2012, ce:false, era:2}]},
+  {name:'RadLogics', region:'US', products:[
+    {name:'AlphaPoint Imaging Software', fda:'K120161', year:2012, ce:false, era:2}]},
+  {name:'IMBIO LLC', region:'US', products:[
+    {name:'Lung Density Analysis', fda:'K141069', year:2014, ce:false, era:2}]},
+  {name:'Riverain Technologies', region:'US', products:[
+    {name:'ClearRead CT', fda:'K161201', year:2016, ce:true, era:2},
+    {name:'ClearRead CT – Compare', fda:null, year:null, ce:true, era:2},
+    {name:'ClearRead CT – Detect', fda:null, year:null, ce:true, era:2},
+    {name:'ClearRead CT – Vessel Suppress', fda:null, year:null, ce:true, era:2},
+    {name:'ClearRead CT CAC', fda:'K242188', year:2024, ce:true, era:4}]},
+  {name:'Body Vision Medical / BodyVision Medical', region:'IL', products:[
+    {name:'Lung Vision', fda:'K163622', year:2017, ce:false, era:3},
+    {name:'LungVision', fda:'K240943', year:2024, ce:false, era:3}]},
+  {name:'Philips Medical Systems / Healthcare', region:'EU', products:[
+    {name:'Illumeo System', fda:'K173588', year:2018, ce:true, era:3},
+    {name:'QLAB Advanced Quantification', fda:'K191647', year:2019, ce:true, era:3}]},
+  {name:'Arterys', region:'US', products:[
+    {name:'Arterys Oncology DL', fda:'K173542', year:2018, ce:false, era:3},
+    {name:'Arterys MICA', fda:'K182034', year:2018, ce:false, era:3}]},
+  {name:'Thirona', region:'EU', products:[
+    {name:'LungQ Software', fda:'K173821', year:2018, ce:true, era:3},
+    {name:'LungQ v3.0.0', fda:'K232412', year:2024, ce:true, era:3},
+    {name:'LungQ 4', fda:'K250766', year:2025, ce:true, era:4},
+    {name:'LungQ Clinical Suite', fda:null, year:null, ce:true, era:3}]},
+  {name:'Coreline Soft', region:'KR', products:[
+    {name:'AVIEW', fda:'K200714', year:2020, ce:true, era:3},
+    {name:'AVIEW LCS', fda:'K193220', year:2020, ce:true, era:3},
+    {name:'A View LCS', fda:'K201710', year:2020, ce:false, era:3},
+    {name:'AVIEW LCS+', fda:null, year:null, ce:true, era:3},
+    {name:'AVIEW Lung Nodule CAD', fda:'K221592', year:2023, ce:true, era:3},
+    {name:'Med-LungCT AI', fda:null, year:null, ce:true, era:3}]},
+  {name:'Merge Healthcare', region:'US', products:[
+    {name:'Merge PACS', fda:'K192455', year:2019, ce:false, era:3}]},
+  {name:'Optellum', region:'EU', products:[
+    {name:'Optellum Virtual Nodule Clinic', fda:'K202300', year:2021, ce:true, era:3},
+    {name:'Virtual Nodule Clinic', fda:null, year:null, ce:true, era:3}]},
+  {name:'Change Healthcare', region:'US', products:[
+    {name:'Change Healthcare Anatomical AI', fda:'K210719', year:2021, ce:false, era:3}]},
+  {name:'Fujifilm', region:'JP', products:[
+    {name:'Synapse 3D Base Tools v6.1', fda:'K203103', year:2021, ce:true, era:3},
+    {name:'Synapse PACS 7.5', fda:'K243647', year:2025, ce:false, era:4}]},
+  {name:'Imagen Technologies', region:'US', products:[
+    {name:'Lung-CAD', fda:'K223811', year:2023, ce:false, era:3}]},
+  {name:'MEDICALIP', region:'KR', products:[
+    {name:'DeepCatch', fda:'K223556', year:2023, ce:false, era:3}]},
+  {name:'Qure.ai', region:'CN', products:[
+    {name:'qXR-LN', fda:'K231805', year:2023, ce:true, era:3},
+    {name:'qCT LN Quant', fda:'K240740', year:2024, ce:true, era:3},
+    {name:'qCT-Lung', fda:null, year:null, ce:true, era:3}]},
+  {name:'Infervision', region:'CN', products:[
+    {name:'InferRead CT Lung', fda:null, year:null, ce:true, era:3},
+    {name:'InferRead Lung CT.AI', fda:'K240554', year:2024, ce:true, era:3}]},
+  {name:'Arineta', region:'IL', products:[
+    {name:'SpotLight / SpotLight Duo', fda:'K241200', year:2025, ce:false, era:4}]},
+  {name:'V5med', region:'US', products:[
+    {name:'V5med Lung AI', fda:'K242919', year:2025, ce:false, era:4}]},
+  {name:'Exo Inc', region:'US', products:[
+    {name:'Lung AI (LAI001)', fda:'K243239', year:2025, ce:false, era:4}]},
+  {name:'AZmed', region:'FR', products:[
+    {name:'AZnod', fda:null, year:null, ce:true, era:3},
+    {name:'Rayvolve LN', fda:'K243831', year:2025, ce:true, era:4}]},
+  {name:'United Imaging Intelligence', region:'CN', products:[
+    {name:'CT Pulmonary Nodules 3D Analysis', fda:null, year:null, ce:true, era:3},
+    {name:'uAI-Discover Chest CT', fda:null, year:null, ce:true, era:4}]},
+  {name:'contextflow', region:'EU', products:[
+    {name:'contextflow ADVANCE Chest CT', fda:null, year:null, ce:true, era:3}]},
+  {name:'HY Medical', region:'CN', products:[
+    {name:'CT AI Lung Nodule Detection', fda:null, year:null, ce:true, era:3}]},
+  {name:'Oxipit', region:'EU', products:[
+    {name:'CT Eye', fda:null, year:null, ce:true, era:3}]},
+  {name:'IMedis', region:'EU', products:[
+    {name:'Duali-Q', fda:null, year:null, ce:true, era:3}]},
+  {name:'Harrison.ai', region:'AU', products:[
+    {name:'Harrison CT Chest', fda:null, year:null, ce:true, era:4}]},
+  {name:'JLK Inc.', region:'KR', products:[
+    {name:'JLD-01K', fda:null, year:null, ce:true, era:3}]},
+  {name:'Monitor Corporation', region:'JP', products:[
+    {name:'LuCAS-Plus', fda:null, year:null, ce:true, era:3}]},
+  {name:'DeepHealth', region:'EU', products:[
+    {name:'Lung Check (Veye Lung Nodules)', fda:null, year:null, ce:true, era:3}]},
+  {name:'Rayscape', region:'EU', products:[
+    {name:'Lung CT', fda:null, year:null, ce:true, era:3}]},
+  {name:'GLEAMER', region:'FR', products:[
+    {name:'LungCT', fda:null, year:null, ce:true, era:3}]},
+  {name:'RevealDx', region:'US', products:[
+    {name:'RevealAI-Lung', fda:null, year:null, ce:true, era:3}]},
+  {name:'SenseTime', region:'CN', products:[
+    {name:'SenseCare-Lung Pro', fda:null, year:null, ce:true, era:3}]},
+  {name:'Milvue', region:'FR', products:[
+    {name:'TechCare Chest', fda:null, year:null, ce:true, era:3}]},
+  {name:'Mitsubishi Space Software', region:'JP', products:[
+    {name:'Truedia', fda:null, year:null, ce:true, era:3}]},
+  {name:'MeVis Medical Solutions', region:'EU', products:[
+    {name:'Veolity', fda:null, year:null, ce:true, era:3}]},
+];
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let state = { q:'', reg:'', region:'', era:'', sort:'name' };
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function regType(products) {
+  const f = products.some(p => p.fda);
+  const c = products.some(p => p.ce);
+  return f && c ? 'both' : f ? 'fda' : 'ce';
+}
+function firstYear(products) {
+  const ys = products.map(p => p.year).filter(Boolean);
+  return ys.length ? Math.min(...ys) : 9999;
+}
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// ── Filter & sort ─────────────────────────────────────────────────────────────
+function filtered() {
+  let data = COMPANIES.filter(co => {
+    if (state.q) {
+      const lq = state.q.toLowerCase();
+      if (!co.name.toLowerCase().includes(lq) &&
+          !co.products.some(p => p.name.toLowerCase().includes(lq))) return false;
+    }
+    if (state.reg && regType(co.products) !== state.reg) return false;
+    if (state.region && co.region !== state.region) return false;
+    if (state.era && !co.products.some(p => p.era === +state.era)) return false;
+    return true;
+  });
+  if (state.sort === 'name')     data.sort((a,b) => a.name.localeCompare(b.name));
+  else if (state.sort === 'products') data.sort((a,b) => b.products.length - a.products.length);
+  else if (state.sort === 'year')     data.sort((a,b) => firstYear(a.products) - firstYear(b.products));
+  return data;
+}
+
+// ── Render helpers ────────────────────────────────────────────────────────────
+function eraBarHTML(products) {
+  const counts = {};
+  products.forEach(p => counts[p.era] = (counts[p.era]||0)+1);
+  const total = products.length;
+  return [1,2,3,4].filter(e => counts[e]).map(e =>
+    `<span style="flex:${Math.max(10, Math.round(counts[e]/total*100))};background:${ERA_COLORS[e]};display:block;height:100%"></span>`
+  ).join('');
+}
+
+function prodTagHTML(p) {
+  if (p.fda && p.ce) return `<span class="p-tag" style="color:#7A4F0A">FDA+CE</span>`;
+  if (p.fda)         return `<span class="p-tag" style="color:var(--fda-ink)">FDA</span>`;
+  return                    `<span class="p-tag" style="color:var(--ce-ink)">CE</span>`;
+}
+
+function cardHTML(co) {
+  const rt = regType(co.products);
+  const rows = co.products.map(p => `
+    <tr>
+      <td><span class="p-dot" style="background:${ERA_COLORS[p.era]}"></span>${esc(p.name)}</td>
+      <td>${prodTagHTML(p)}</td>
+      <td>${p.fda
+        ? `<a class="fda-link" href="https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=${esc(p.fda)}" target="_blank" rel="noopener noreferrer">${esc(p.fda)}</a>`
+        : `<span class="dash">—</span>`}</td>
+      <td class="yr-cell">${p.year || '<span class="dash">—</span>'}</td>
+    </tr>`).join('');
+
+  return `
+  <div class="card">
+    <div class="card-hd" onclick="this.parentElement.classList.toggle('open')">
+      <span class="flag">${FLAG[co.region]||''}</span>
+      <div class="co-info">
+        <div class="co-name">${esc(co.name)}</div>
+        <div class="co-region">${REGION_NAMES[co.region]||co.region}</div>
+      </div>
+      <div class="co-meta">
+        ${(rt==='fda'||rt==='both') ? '<span class="badge b-fda">FDA</span>' : ''}
+        ${(rt==='ce' ||rt==='both') ? '<span class="badge b-ce">CE</span>'  : ''}
+        <span class="badge b-cnt">${co.products.length} product${co.products.length!==1?'s':''}</span>
+        <div class="era-bar">${eraBarHTML(co.products)}</div>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+    </div>
+    <div class="card-body">
+      <table>
+        <thead><tr>
+          <th>Device name</th><th>Clearance</th><th>FDA submission</th><th style="text-align:right">Year</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+// ── Main render ───────────────────────────────────────────────────────────────
+function render() {
+  const data = filtered();
+  const totalProds = data.reduce((s,c) => s+c.products.length, 0);
+  document.getElementById('resultCount').textContent = `${data.length} companies · ${totalProds} products`;
+  document.getElementById('cards').innerHTML = data.length
+    ? data.map(cardHTML).join('')
+    : '<div class="empty">No results match your filters.</div>';
+}
+
+// ── Init stats ────────────────────────────────────────────────────────────────
+function initStats() {
+  const total   = COMPANIES.reduce((s,c) => s+c.products.length, 0);
+  const fdaCount= COMPANIES.reduce((s,c) => s+c.products.filter(p=>p.fda).length, 0);
+  const regions = new Set(COMPANIES.map(c=>c.region)).size;
+  document.getElementById('stats').innerHTML = [
+    {n:COMPANIES.length, lbl:'Companies'},
+    {n:total,            lbl:'Total products'},
+    {n:fdaCount,         lbl:'FDA-cleared'},
+    {n:regions,          lbl:'Regions'},
+  ].map(s=>`<div class="stat"><div class="stat-n">${s.n}</div><div class="stat-lbl">${s.lbl}</div></div>`).join('');
+}
+
+// ── Init era legend ───────────────────────────────────────────────────────────
+function initEraLegend() {
+  document.getElementById('eraLegend').innerHTML = [1,2,3,4].map(e=>`
+    <div class="era-chip" onclick="toggleEra(this,'${e}')">
+      <span class="era-dot" style="background:${ERA_COLORS[e]}"></span>
+      Era ${e} — ${ERA_LABELS[e]}
+      <span class="era-yr">${ERA_YEARS[e]}</span>
+    </div>`).join('');
+}
+
+function toggleEra(chip, e) {
+  if (state.era === e) {
+    state.era = '';
+    chip.classList.remove('active');
+  } else {
+    state.era = e;
+    document.querySelectorAll('.era-chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+  }
+  render();
+}
+
+// ── Event listeners ───────────────────────────────────────────────────────────
+document.getElementById('searchInput').addEventListener('input',  e => { state.q      = e.target.value; render(); });
+document.getElementById('regFilter')  .addEventListener('change', e => { state.reg    = e.target.value; render(); });
+document.getElementById('regionFilter').addEventListener('change',e => { state.region = e.target.value; render(); });
+document.getElementById('sortSelect') .addEventListener('change', e => { state.sort   = e.target.value; render(); });
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
+initStats();
+initEraLegend();
+render();
+</script>
+</body>
+</html>
