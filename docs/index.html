@@ -706,10 +706,15 @@ function computeAnalytics() {
 
   const byYearMap = {};
   allP.filter(p => p.year).forEach(p => { byYearMap[p.year] = (byYearMap[p.year]||0) + 1; });
-  const approvalsByYear = Object.entries(byYearMap).map(([y,c]) => ({year:+y, count:c})).sort((a,b) => a.year-b.year);
-
+  const approvalsByYear = [];
   let running = 0;
-  const cumulativeByYear = approvalsByYear.map(d => { running += d.count; return {year:d.year, total:running}; });
+  const cumulativeByYear = [];
+  for (let y = 2001; y <= 2026; y++) {
+    const count = byYearMap[y] || 0;
+    approvalsByYear.push({year: y, count});
+    running += count;
+    cumulativeByYear.push({year: y, total: running});
+  }
 
   const byRegionMap = {};
   COMPANIES.forEach(co => { byRegionMap[co.region] = (byRegionMap[co.region]||0) + co.products.length; });
@@ -757,7 +762,7 @@ function renderBarChart(containerId, data, xKey, yKey, colorFn, labelFn) {
     const barH = (d[yKey]/maxV)*cH;
     const y = pad.t + cH - barH;
     const lbl = labelFn ? labelFn(d) : String(d[xKey]);
-    const showLabel = n <= 6 || (typeof d[xKey] === 'number' && d[xKey] % 5 === 0);
+    const showLabel = n <= 6 || i === 0 || i === n-1 || (typeof d[xKey] === 'number' && d[xKey] % 5 === 0);
     out += `<rect x="${n2(cx-bw/2)}" y="${n2(y)}" width="${n2(bw)}" height="${n2(barH)}" fill="${colorFn(d,i)}" rx="2"><title>${lbl}: ${d[yKey]}</title></rect>`;
     if (showLabel) out += `<text x="${n2(cx)}" y="${H-4}" text-anchor="middle" font-size="9" fill="#9A968F" font-family="'DM Mono',monospace">${lbl}</text>`;
   });
@@ -782,8 +787,8 @@ function renderLineChart(containerId, data, xKey, yKey) {
 
   out += `<polyline points="${pts.map(p=>`${n2(p.x)},${n2(p.y)}`).join(' ')}" fill="none" stroke="#185FA5" stroke-width="2" stroke-linejoin="round"/>`;
 
-  pts.forEach(({x, d}) => {
-    const showLabel = n <= 6 || (typeof d[xKey] === 'number' && d[xKey] % 5 === 0);
+  pts.forEach(({x, d}, i) => {
+    const showLabel = n <= 6 || i === 0 || i === n-1 || (typeof d[xKey] === 'number' && d[xKey] % 5 === 0);
     if (showLabel) out += `<text x="${n2(x)}" y="${H-4}" text-anchor="middle" font-size="9" fill="#9A968F" font-family="'DM Mono',monospace">${d[xKey]}</text>`;
   });
   out += '</svg>';
@@ -1117,7 +1122,14 @@ function renderTimeline(containerId) {
     });
   });
   out += '</svg>';
-  document.getElementById(containerId).innerHTML = out;
+  const legend = `<div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;justify-content:center">` +
+    [1,2,3,4].map(e =>
+      `<span style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--ink2);font-family:'DM Mono',monospace">` +
+      `<span style="width:8px;height:8px;border-radius:50%;background:${ERA_COLORS[e]};display:inline-block;flex-shrink:0"></span>` +
+      `Era ${e} — ${ERA_LABELS[e]}&ensp;<span style="color:var(--ink3)">${ERA_YEARS[e]}</span></span>`
+    ).join('') +
+    `</div>`;
+  document.getElementById(containerId).innerHTML = out + legend;
 }
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
