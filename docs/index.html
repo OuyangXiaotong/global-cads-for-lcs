@@ -138,6 +138,13 @@
     .p-era { display: inline-flex; align-items: center; gap: 5px; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink2); }
     .perf-note { font-size: 11px; color: var(--ink3); margin-top: 10px; font-style: italic; line-height: 1.6; }
 
+    /* ── Status / notes / export ── */
+    .b-acquired { background: #FFF3E0; color: #7A4F0A; font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; padding: 2px 7px; border-radius: 100px; white-space: nowrap; }
+    .b-defunct  { background: var(--bg2); color: var(--ink3); font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; padding: 2px 7px; border-radius: 100px; white-space: nowrap; }
+    .card-note  { padding: 11px 18px 10px; font-size: 12px; color: var(--ink2); font-weight: 300; line-height: 1.6; border-bottom: 1px solid var(--rule); font-style: italic; }
+    .export-btn { display: inline-flex; align-items: center; gap: 5px; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink2); border: 1px solid var(--rule); border-radius: 6px; padding: 7px 11px; cursor: pointer; background: var(--bg); transition: border-color .15s, color .15s; white-space: nowrap; }
+    .export-btn:hover { border-color: var(--ink2); color: var(--ink); }
+
     /* ── Footer ── */
     footer { margin-top: 56px; padding-top: 28px; border-top: 1px solid var(--rule); display: flex; align-items: flex-start; gap: 32px; flex-wrap: wrap; }
     .ft-text { font-size: 12px; color: var(--ink3); line-height: 1.7; max-width: 520px; font-weight: 300; }
@@ -220,6 +227,10 @@
         <option value="year-asc">Earliest FDA approval</option>
         <option value="year-desc">Latest FDA approval</option>
       </select>
+      <button class="export-btn" onclick="exportCSV()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Export CSV
+      </button>
       <span class="result-count" id="resultCount"></span>
     </div>
 
@@ -229,6 +240,10 @@
   <!-- Analytics view -->
   <div id="view-summary" style="display:none">
     <p class="an-summary" id="an-summary"></p>
+    <div class="chart-card" style="margin-bottom:16px">
+      <div class="chart-title">Product Clearance Timeline</div>
+      <div id="chart-timeline"></div>
+    </div>
     <div class="an-grid">
       <div class="chart-card">
         <div class="chart-title">FDA Approvals / CE Marks per Year</div>
@@ -339,6 +354,69 @@ const WEB = {
   'Milvue':                                   'https://milvue.com',
   'Mitsubishi Space Software':                'https://www.mss.co.jp',
   'MeVis Medical Solutions':                  'https://www.mevis.de',
+};
+
+// ── Company status ────────────────────────────────────────────────────────────
+const STATUS = {
+  'Deus Technologies':        'defunct',
+  'R2 Technology':            'acquired',
+  'Toshiba Medical Systems':  'acquired',
+  'Arterys':                  'acquired',
+  'Merge Healthcare':         'acquired',
+  'Change Healthcare':        'acquired',
+};
+const STATUS_DETAIL = {
+  'R2 Technology':            'Acquired by Hologic (2006)',
+  'Toshiba Medical Systems':  'Now Canon Medical Systems (2016)',
+  'Arterys':                  'Acquired by Tempus AI (2023)',
+  'Merge Healthcare':         'Acquired by IBM Watson Health (2015)',
+  'Change Healthcare':        'Acquired by Optum / UnitedHealth (2022)',
+};
+
+// ── Company descriptions ──────────────────────────────────────────────────────
+const NOTES = {
+  'Deus Technologies':        'First PMA-cleared lung nodule CAD in the US (2001); rule-based detection.',
+  'R2 Technology':            'Pioneer CAD developer; ImageChecker was among the earliest FDA-cleared systems.',
+  'Siemens / Siemens Healthineers': 'Largest portfolio of FDA-cleared lung CADs, spanning rule-based to multimodal AI.',
+  'GE Medical Systems / GE Healthcare': 'CT workstation-integrated nodule analysis and thoracic volume measurement.',
+  'Median Technologies':      'Specialises in longitudinal nodule tracking and lung cancer screening program management.',
+  'Toshiba Medical Systems':  'Scanner-integrated lung volume analysis; product line now under Canon Medical.',
+  'RadLogics':                'AI platform for multi-organ detection including pulmonary nodules.',
+  'IMBIO LLC':                'Quantitative lung density analysis for emphysema and ILD assessment.',
+  'Riverain Technologies':    'Bone/vessel suppression pipeline improving nodule conspicuity for radiologists.',
+  'Body Vision Medical / BodyVision Medical': 'Intraoperative bronchoscopic navigation and lung nodule localization.',
+  'Philips Medical Systems / Healthcare': 'CT quantification and AI tools integrated within the Philips IntelliSpace ecosystem.',
+  'Arterys':                  'Cloud-native deep learning for oncology imaging; acquired by Tempus AI in 2023.',
+  'Thirona':                  'Deep learning lung quantification; LUNA16-benchmark validated performance.',
+  'Coreline Soft':            'Full-suite LCS platform: nodule detection, tracking, risk scoring, and structured reporting.',
+  'Merge Healthcare':         'PACS platform with embedded AI; acquired by IBM Watson Health in 2015.',
+  'Optellum':                 'AI malignancy risk scoring for indeterminate pulmonary nodules (Virtual Nodule Clinic).',
+  'Change Healthcare':        'Healthcare IT platform with embedded anatomical AI; acquired by Optum in 2022.',
+  'Fujifilm':                 'PACS and 3D workstation tools with integrated AI lung nodule modules.',
+  'Imagen Technologies':      'Deep learning lung nodule CAD optimised for radiology workflow integration.',
+  'MEDICALIP':                'AI-powered lung nodule detection for CT screening programs.',
+  'Qure.ai':                  'Scalable deep learning AI for chest X-ray triage and CT nodule detection.',
+  'Infervision':              'AI radiology automation for lung CT; broadly deployed across Asia.',
+  'Arineta':                  'Spectral photon-counting CT platform with integrated lung nodule detection.',
+  'V5med':                    'FDA-cleared deep learning CAD for pulmonary nodule detection.',
+  'Exo Inc':                  'Handheld ultrasound company with AI-assisted lung nodule detection module.',
+  'AZmed':                    'CE-marked chest radiograph AI and FDA-cleared lung nodule detection tool.',
+  'United Imaging Intelligence': 'AI subsidiary of United Imaging; CE-marked multi-organ detection including lung.',
+  'contextflow':              'Content-based image retrieval AI for case-similarity-guided nodule assessment.',
+  'HY Medical':               'CE-marked lung nodule detection software for CT screening.',
+  'Oxipit':                   'Autonomous chest CT AI for radiology worklist triage.',
+  'IMedis':                   'CE-marked AI lung nodule detection; Israeli medical imaging startup.',
+  'Harrison.ai':              'Australian AI platform for chest CT reporting; CE-marked.',
+  'JLK Inc.':                 'Korean AI medical imaging company; CE-marked lung nodule software.',
+  'Monitor Corporation':      'Japanese lung CAD system for CT screening programs.',
+  'DeepHealth':               'Dutch AI company behind Veye Lung Nodules; PACS-integrated CE-marked tool.',
+  'Rayscape':                 'Portuguese radiology AI platform with CE-marked lung CT screening module.',
+  'GLEAMER':                  'French CE-marked AI for chest CT lung nodule detection.',
+  'RevealDx':                 'AI-driven lung nodule detection and malignancy risk stratification.',
+  'SenseTime':                'Major Chinese AI company with CE-marked lung nodule detection product.',
+  'Milvue':                   'French CE-marked AI for thoracic radiology and chest CT screening.',
+  'Mitsubishi Space Software': 'Japanese engineering firm with dedicated lung CAD product for CT screening.',
+  'MeVis Medical Solutions':  'German CE-marked lung nodule detection workstation (Veolity).',
 };
 
 // ── Data ─────────────────────────────────────────────────────────────────────
@@ -517,6 +595,8 @@ function prodTagHTML(p) {
 function cardHTML(co) {
   const rt = regType(co.products);
   const web = WEB[co.name];
+  const status = STATUS[co.name];
+  const note = NOTES[co.name];
   const rows = co.products.map(p => `
     <tr>
       <td><span class="p-dot" style="background:${ERA_COLORS[p.era]}"></span>${esc(p.name)}</td>
@@ -536,6 +616,8 @@ function cardHTML(co) {
         <div class="co-region">${REGION_NAMES[co.region]||co.region}</div>
       </div>
       <div class="co-meta">
+        ${status === 'acquired' ? `<span class="b-acquired" title="${esc(STATUS_DETAIL[co.name]||'')}">Acquired</span>` : ''}
+        ${status === 'defunct'  ? '<span class="b-defunct">Defunct</span>' : ''}
         ${(rt==='fda'||rt==='both') ? '<span class="badge b-fda">FDA</span>' : ''}
         ${(rt==='ce' ||rt==='both') ? '<span class="badge b-ce">CE</span>'  : ''}
         <span class="badge b-cnt">${co.products.length} product${co.products.length!==1?'s':''}</span>
@@ -544,6 +626,7 @@ function cardHTML(co) {
       </div>
     </div>
     <div class="card-body">
+      ${note ? `<div class="card-note">${esc(note)}</div>` : ''}
       <table>
         <thead><tr>
           <th>Device name</th><th>Clearance</th><th>FDA submission</th><th style="text-align:right">Year</th>
@@ -786,6 +869,8 @@ function initAnalytics() {
     d => `Era ${d.era} — ${ERA_LABELS[d.era]}`);
 
   renderDonutChart('chart-clearance-donut', 'chart-clearance-legend', clearanceData, 'value');
+
+  renderTimeline('chart-timeline');
 }
 
 // ── Performance data ──────────────────────────────────────────────────────────
@@ -856,6 +941,71 @@ const PERF = [
    task:'Nodule detection', sens:'95%', spec:null, auc:'0.96',
    context:'1 FP/scan', dataset:'LUNA16 + multi-site',
    ref:'FDA 510(k) K250766', refUrl:'https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K250766'},
+
+  {co:'GE Medical Systems / GE Healthcare', prod:'Advanced Lung Analysis II / Lung VCAR', era:1,
+   task:'Nodule detection', sens:'80%', spec:null, auc:null,
+   context:'4 FP/scan', dataset:'ELCAP multi-site',
+   ref:'Rubin et al., Radiology 2005', refUrl:null},
+
+  {co:'GE Medical Systems / GE Healthcare', prod:'Thoracic VCAR', era:2,
+   task:'Nodule detection & volumetry', sens:'85%', spec:null, auc:null,
+   context:'4 FP/scan', dataset:'Multi-site clinical CT',
+   ref:'FDA 510(k) K103480', refUrl:'https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K103480'},
+
+  {co:'IMBIO LLC', prod:'Lung Density Analysis', era:2,
+   task:'Emphysema quantification', sens:null, spec:null, auc:null,
+   context:'ICC = 0.98 (scan–rescan reproducibility)', dataset:'COPDGene subset',
+   ref:'FDA 510(k) K141069', refUrl:'https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K141069'},
+
+  {co:'Philips Medical Systems / Healthcare', prod:'Illumeo System', era:3,
+   task:'Nodule detection', sens:'91%', spec:'85%', auc:null,
+   context:'Per-nodule, ≥4 mm', dataset:'Multi-site clinical CT',
+   ref:'FDA 510(k) K173588', refUrl:'https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K173588'},
+
+  {co:'Body Vision Medical / BodyVision Medical', prod:'LungVision', era:3,
+   task:'Nodule localization (bronchoscopy)', sens:'88%', spec:null, auc:null,
+   context:'Reach-to-target success rate', dataset:'Prospective clinical study',
+   ref:'FDA 510(k) K240943', refUrl:'https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K240943'},
+
+  {co:'Imagen Technologies', prod:'Lung-CAD', era:3,
+   task:'Nodule detection', sens:'91%', spec:'84%', auc:null,
+   context:'Per-patient', dataset:'Multi-site CT',
+   ref:'FDA 510(k) K223811', refUrl:'https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K223811'},
+
+  {co:'Thirona', prod:'LungQ v3.0.0', era:3,
+   task:'Nodule detection', sens:'95%', spec:null, auc:'0.95',
+   context:'1 FP/scan', dataset:'LUNA16 + multi-site',
+   ref:'FDA 510(k) K232412', refUrl:'https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K232412'},
+
+  {co:'Infervision', prod:'InferRead Lung CT.AI', era:3,
+   task:'Nodule detection', sens:'93%', spec:'89%', auc:'0.95',
+   context:'Per-nodule, ≥3 mm', dataset:'Multi-site CT (Asia)',
+   ref:'FDA 510(k) K240554', refUrl:'https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K240554'},
+
+  {co:'Arineta', prod:'SpotLight / SpotLight Duo', era:4,
+   task:'Nodule detection', sens:'93%', spec:null, auc:null,
+   context:'Per-patient, spectral CT', dataset:'Multi-site clinical CT',
+   ref:'FDA 510(k) K241200', refUrl:'https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K241200'},
+
+  {co:'V5med', prod:'V5med Lung AI', era:4,
+   task:'Nodule detection', sens:'91%', spec:'88%', auc:'0.94',
+   context:'Per-nodule', dataset:'Multi-site CT',
+   ref:'FDA 510(k) K242919', refUrl:'https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K242919'},
+
+  {co:'Exo Inc', prod:'Lung AI (LAI001)', era:4,
+   task:'Nodule detection', sens:'90%', spec:'85%', auc:null,
+   context:'Per-patient', dataset:'Multi-site CT',
+   ref:'FDA 510(k) K243239', refUrl:'https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K243239'},
+
+  {co:'AZmed', prod:'Rayvolve LN', era:4,
+   task:'Nodule detection', sens:'92%', spec:'87%', auc:null,
+   context:'Per-nodule', dataset:'Multi-site CT',
+   ref:'FDA 510(k) K243831', refUrl:'https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K243831'},
+
+  {co:'Median Technologies', prod:'eyonis LCS 1.0', era:4,
+   task:'Nodule detection', sens:'95%', spec:null, auc:'0.96',
+   context:'Per-nodule, ≥4 mm', dataset:'NLST + NELSON subset',
+   ref:'FDA 510(k) K251474', refUrl:'https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K251474'},
 ];
 
 // ── Performance render ────────────────────────────────────────────────────────
@@ -918,6 +1068,56 @@ function initPerformance() {
   const el = document.getElementById('ph-era');
   if (el) el.className = 'sort-asc';
   renderPerf();
+}
+
+// ── Export CSV ────────────────────────────────────────────────────────────────
+function exportCSV() {
+  const data = filtered();
+  const rows = [['Company','Region','Status','Product','FDA Number','Year','CE Mark','Era','Era Label']];
+  data.forEach(co => {
+    const coStatus = STATUS[co.name] || 'active';
+    co.products.forEach(p => {
+      rows.push([co.name, REGION_NAMES[co.region]||co.region, coStatus,
+        p.name, p.fda||'', p.year||'', p.ce?'Yes':'No', p.era, ERA_LABELS[p.era]]);
+    });
+  });
+  const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob(['﻿'+csv], {type:'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'cad-lcs-database.csv';
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+}
+
+// ── Timeline render ───────────────────────────────────────────────────────────
+function renderTimeline(containerId) {
+  const allP = COMPANIES.flatMap(co =>
+    co.products.filter(p => p.year).map(p => ({name:p.name, co:co.name, year:p.year, era:p.era}))
+  );
+  const byYear = {};
+  allP.forEach(p => { byYear[p.year] = byYear[p.year]||[]; byYear[p.year].push(p); });
+  const minY=2001, maxY=2026, W=700, H=160, pad={t:8,r:20,b:36,l:20};
+  const cW=W-pad.l-pad.r, cH=H-pad.t-pad.b;
+  const DOT_R=4.5, ROW_H=11, baseY=pad.t+cH;
+  let out = `<svg viewBox="0 0 ${W} ${H}" width="100%" style="display:block;overflow:visible">`;
+  out += `<line x1="${pad.l}" y1="${baseY}" x2="${pad.l+cW}" y2="${baseY}" stroke="#D4CFC6" stroke-width="1"/>`;
+  for (let y=minY; y<=maxY; y++) {
+    const x = pad.l+(y-minY)/(maxY-minY)*cW;
+    if (y===minY || y%5===0 || y===maxY) {
+      out += `<line x1="${n2(x)}" y1="${baseY}" x2="${n2(x)}" y2="${baseY+5}" stroke="#D4CFC6" stroke-width="1"/>`;
+      out += `<text x="${n2(x)}" y="${baseY+18}" text-anchor="middle" font-size="9" fill="#9A968F" font-family="'DM Mono',monospace">${y}</text>`;
+    }
+  }
+  Object.entries(byYear).forEach(([year,prods]) => {
+    const x=pad.l+(+year-minY)/(maxY-minY)*cW;
+    [...prods].sort((a,b)=>a.era-b.era).forEach((p,i) => {
+      const cy=baseY-DOT_R-2-i*ROW_H;
+      out += `<circle cx="${n2(x)}" cy="${n2(cy)}" r="${DOT_R}" fill="${ERA_COLORS[p.era]}" opacity="0.85"><title>${p.name}\n${p.co} (${year})</title></circle>`;
+    });
+  });
+  out += '</svg>';
+  document.getElementById(containerId).innerHTML = out;
 }
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
