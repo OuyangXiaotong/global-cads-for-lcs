@@ -75,7 +75,7 @@ const DATA = [
     { name: 'Lung-CAD', fda: 'K223811', year: 2023, ce: false, era: 3 }]},
   { co: 'MEDICALIP', region: 'KR', products: [
     { name: 'DeepCatch', fda: 'K223556', year: 2023, ce: false, era: 3 }]},
-  { co: 'Qure.ai', region: 'CN', products: [
+  { co: 'Qure.ai', region: 'IN', products: [
     { name: 'qXR-LN', fda: 'K231805', year: 2023, ce: true, era: 3 },
     { name: 'qCT LN Quant', fda: 'K240740', year: 2024, ce: true, era: 3 },
     { name: 'qCT-Lung', fda: null, year: null, ce: true, era: 3 }]},
