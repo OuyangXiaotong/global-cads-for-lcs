@@ -137,6 +137,9 @@
     .p-good { color: #2D6A1F; font-weight: 500; }
     .p-era { display: inline-flex; align-items: center; gap: 5px; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink2); }
     .perf-note { font-size: 11px; color: var(--ink3); margin-top: 10px; font-style: italic; line-height: 1.6; }
+    .show-more-btn { display: block; width: 100%; margin-top: 10px; padding: 10px; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink2); border: 1px solid var(--rule); border-radius: 8px; background: var(--bg); cursor: pointer; text-align: center; transition: border-color .15s, color .15s, background .15s; }
+    .show-more-btn:hover { border-color: var(--ink2); color: var(--ink); background: var(--bg2); }
+    .perf-chart-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 16px; margin-bottom: 24px; }
 
     /* ── Status / notes / export ── */
     .b-acquired { background: #FFF3E0; color: #7A4F0A; font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; padding: 2px 7px; border-radius: 100px; white-space: nowrap; }
@@ -289,6 +292,20 @@
   <!-- Performance view -->
   <div id="view-performance" style="display:none">
     <p class="an-summary" id="perf-summary"></p>
+    <div class="perf-chart-grid">
+      <div class="chart-card">
+        <div class="chart-title">Sensitivity Ranking</div>
+        <div id="perf-chart-sens"></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">AUC Ranking</div>
+        <div id="perf-chart-auc"></div>
+      </div>
+      <div class="chart-card" style="grid-column:1/-1">
+        <div class="chart-title">Average Sensitivity by AI Era</div>
+        <div id="perf-chart-era"></div>
+      </div>
+    </div>
     <div class="search-wrap" style="max-width:260px;margin-bottom:12px">
       <svg class="s-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
       <input type="text" id="perfSearch" placeholder="Filter by company or product…">
@@ -312,6 +329,7 @@
         <tbody id="perf-tbody"></tbody>
       </table>
     </div>
+    <div id="perf-expand"></div>
     <p class="perf-note">Performance data is sourced from FDA 510(k) submission summaries and published literature. Values may differ by test cohort, nodule size threshold, and evaluation protocol — consult primary sources for exact figures.</p>
   </div>
 
@@ -1082,6 +1100,8 @@ const PERF = [
 // ── Performance render ────────────────────────────────────────────────────────
 let perfSort = {col:'era', dir:1};
 let perfQ = '';
+let perfExpanded = false;
+const PERF_PREVIEW = 3;
 
 function numVal(s) {
   if (!s) return -1;
@@ -1132,9 +1152,78 @@ function renderPerf() {
     if (typeof av === 'number') return (av - bv) * perfSort.dir;
     return av.localeCompare(bv) * perfSort.dir;
   });
-  document.getElementById('perf-tbody').innerHTML = sorted.map(perfRowHTML).join('');
+
+  const showAll = perfExpanded || !!perfQ;
+  const visible = showAll ? sorted : sorted.slice(0, PERF_PREVIEW);
+  const hiddenN = showAll ? 0 : Math.max(0, sorted.length - PERF_PREVIEW);
+
+  document.getElementById('perf-tbody').innerHTML = visible.map(perfRowHTML).join('');
   document.getElementById('perf-summary').textContent =
     `${sorted.length} of ${PERF.length} entries · ${new Set(sorted.map(r=>r.co)).size} companies — click column headers to sort`;
+
+  const expEl = document.getElementById('perf-expand');
+  if (expEl) {
+    if (hiddenN > 0)
+      expEl.innerHTML = `<button class="show-more-btn" onclick="perfExpanded=true;renderPerf()">Show ${hiddenN} more entries ↓</button>`;
+    else if (perfExpanded && !perfQ)
+      expEl.innerHTML = `<button class="show-more-btn" onclick="perfExpanded=false;renderPerf()">Show less ↑</button>`;
+    else
+      expEl.innerHTML = '';
+  }
+}
+
+function renderPerfRanking(containerId, metricKey) {
+  const rows = PERF
+    .filter(r => r[metricKey])
+    .map(r => ({co:r.co, prod:r.prod, era:r.era, val:numVal(r[metricKey]), raw:r[metricKey]}))
+    .sort((a,b) => b.val - a.val);
+  if (!rows.length) {
+    document.getElementById(containerId).innerHTML =
+      '<p style="color:var(--ink3);font-size:12px;padding:8px 0">No data available</p>';
+    return;
+  }
+  const maxV = rows[0].val;
+  const rowH=22, pL=126, pR=44, pT=4, pB=4, W=500, cW=W-pL-pR;
+  const H=pT+rows.length*rowH+pB;
+  let out=`<svg viewBox="0 0 ${W} ${H}" width="100%" style="display:block;overflow:visible">`;
+  rows.forEach((d,i) => {
+    const y=pT+i*rowH, barW=(d.val/maxV)*cW;
+    const lbl = d.co.length>20 ? d.co.slice(0,19)+'…' : d.co;
+    out+=`<rect x="${pL}" y="${n2(y+3)}" width="${n2(barW)}" height="${rowH-6}" fill="${ERA_COLORS[d.era]}" rx="2" opacity="0.82"><title>${esc(d.co)} — ${esc(d.prod)}: ${d.raw}</title></rect>`;
+    out+=`<text x="${pL-6}" y="${n2(y+rowH/2+4)}" text-anchor="end" font-size="10" fill="#5A5750" font-family="'DM Sans',sans-serif">${esc(lbl)}</text>`;
+    out+=`<text x="${n2(pL+barW+5)}" y="${n2(y+rowH/2+4)}" font-size="10" fill="#9A968F" font-family="'DM Mono',monospace">${d.raw}</text>`;
+  });
+  out+='</svg>';
+  document.getElementById(containerId).innerHTML=out;
+}
+
+function renderEraPerf(containerId) {
+  const byEra = {};
+  PERF.filter(r => r.sens).forEach(r => {
+    byEra[r.era] = byEra[r.era]||[];
+    byEra[r.era].push(numVal(r.sens));
+  });
+  const data = [1,2,3,4].filter(e => byEra[e]?.length).map(e => {
+    const vals = byEra[e];
+    const avg = vals.reduce((s,v)=>s+v,0)/vals.length;
+    return {era:e, avg, n:vals.length};
+  });
+  const W=500, H=180, pad={t:12,r:12,b:48,l:40};
+  const cW=W-pad.l-pad.r, cH=H-pad.t-pad.b;
+  const maxV=100, bw=cW/data.length*0.5;
+  let out=`<svg viewBox="0 0 ${W} ${H}" width="100%" style="display:block;overflow:visible">`;
+  out+=hGrid(pad,cH,cW,maxV,4);
+  data.forEach((d,i) => {
+    const cx=pad.l+(i+0.5)*cW/data.length;
+    const barH=(d.avg/maxV)*cH, y=pad.t+cH-barH;
+    out+=`<rect x="${n2(cx-bw/2)}" y="${n2(y)}" width="${n2(bw)}" height="${n2(barH)}" fill="${ERA_COLORS[d.era]}" rx="3"><title>Era ${d.era} — ${ERA_LABELS[d.era]}\nAvg sensitivity: ${d.avg.toFixed(1)}% (n=${d.n})</title></rect>`;
+    out+=`<text x="${n2(cx)}" y="${n2(pad.t+cH-barH-6)}" text-anchor="middle" font-size="10" fill="#5A5750" font-family="'DM Mono',monospace">${d.avg.toFixed(1)}%</text>`;
+    out+=`<text x="${n2(cx)}" y="${H-28}" text-anchor="middle" font-size="10" fill="#5A5750" font-family="'DM Sans',sans-serif">Era ${d.era}</text>`;
+    out+=`<text x="${n2(cx)}" y="${H-16}" text-anchor="middle" font-size="9" fill="#9A968F" font-family="'DM Sans',sans-serif">${ERA_LABELS[d.era]}</text>`;
+    out+=`<text x="${n2(cx)}" y="${H-4}" text-anchor="middle" font-size="9" fill="#9A968F" font-family="'DM Mono',monospace">n=${d.n}</text>`;
+  });
+  out+='</svg>';
+  document.getElementById(containerId).innerHTML=out;
 }
 
 let perfInited = false;
@@ -1144,6 +1233,9 @@ function initPerformance() {
   document.getElementById('perfSearch').addEventListener('input', e => { perfQ = e.target.value; renderPerf(); });
   const el = document.getElementById('ph-era');
   if (el) el.className = 'sort-asc';
+  renderPerfRanking('perf-chart-sens', 'sens');
+  renderPerfRanking('perf-chart-auc', 'auc');
+  renderEraPerf('perf-chart-era');
   renderPerf();
 }
 
