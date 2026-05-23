@@ -150,6 +150,18 @@
     mark { background: #FFF3C4; color: inherit; border-radius: 2px; padding: 0 1px; }
     .tl-toggle { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .04em; padding: 3px 10px; border: 1px solid var(--rule); border-radius: 100px; background: var(--bg); color: var(--ink3); cursor: pointer; transition: background .15s, color .15s, border-color .15s; }
     .tl-toggle.active { background: var(--bg3); color: var(--ink); border-color: var(--ink2); }
+    .perf-co-link { background: none; border: none; padding: 0; cursor: pointer; color: inherit; font: inherit; font-size: 13px; font-weight: 500; text-align: left; text-decoration: underline; text-decoration-color: var(--rule); text-underline-offset: 2px; transition: text-decoration-color .15s, color .15s; }
+    .perf-co-link:hover { text-decoration-color: var(--ink2); color: var(--fda-ink); }
+    .methodology { margin-top: 32px; border: 1px solid var(--rule); border-radius: 10px; overflow: hidden; background: var(--bg); }
+    .methodology summary { padding: 14px 20px; cursor: pointer; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink2); list-style: none; display: flex; align-items: center; justify-content: space-between; user-select: none; }
+    .methodology summary::-webkit-details-marker { display: none; }
+    .methodology[open] summary { border-bottom: 1px solid var(--rule); }
+    .methodology summary svg { transition: transform .2s; flex-shrink: 0; }
+    .methodology[open] summary svg { transform: rotate(180deg); }
+    .methodology-body { padding: 20px 24px 24px; font-size: 12px; color: var(--ink2); line-height: 1.85; font-weight: 300; }
+    .methodology-body h3 { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink3); margin: 18px 0 6px; }
+    .methodology-body h3:first-child { margin-top: 0; }
+    .methodology-body p { max-width: 680px; }
 
     /* ── Footer ── */
     footer { margin-top: 56px; padding-top: 28px; border-top: 1px solid var(--rule); display: flex; align-items: flex-start; gap: 32px; flex-wrap: wrap; }
@@ -341,6 +353,30 @@
     <p class="perf-note">Performance data is sourced from FDA 510(k) submission summaries and published literature. Values may differ by test cohort, nodule size threshold, and evaluation protocol — consult primary sources for exact figures.</p>
   </div>
 
+  <details class="methodology">
+    <summary>
+      Methodology &amp; scope
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </summary>
+    <div class="methodology-body">
+      <h3>Scope &amp; inclusion criteria</h3>
+      <p>This database covers commercial software medical devices (SaMD) designed for CT-based pulmonary nodule detection, characterisation, or management. Inclusion requires either FDA 510(k)/PMA clearance or CE marking under MDD/MDR. Excluded: general-purpose PACS viewers, dose-reduction tools, chest X-ray–only systems, and research-only software not available commercially.</p>
+
+      <h3>Era classification</h3>
+      <p><strong>Era 1 — Rule-based (2001–2009):</strong> Handcrafted image features (shape, texture, density) processed by decision trees, SVMs, or rule engines. Deterministic logic requiring expert parameter tuning.<br>
+      <strong>Era 2 — ML / Radiomics (2010–2016):</strong> High-dimensional radiomic features extracted from CT combined with classical ML classifiers (SVM, random forest, gradient boosting). Features are still engineered by domain experts.<br>
+      <strong>Era 3 — Deep learning (2017–2022):</strong> End-to-end convolutional neural networks (U-Net, ResNet, 3D-CNN) learning representations directly from voxel data. Dominant paradigm for FDA clearances in this period.<br>
+      <strong>Era 4 — VLM / Multimodal (2023–2026):</strong> Vision-language foundation models integrating CT imaging with clinical text, radiology reports, and multimodal reasoning. Characterised by large pre-trained backbones fine-tuned for specific tasks.</p>
+
+      <h3>FDA clearance vs. CE marking</h3>
+      <p><strong>FDA clearance</strong> (510(k) or PMA): US market authorisation via CDRH. 510(k) demonstrates substantial equivalence to a predicate device; PMA requires independent clinical evidence. The year listed is the FDA decision date.<br>
+      <strong>CE marking:</strong> European market authorisation under EU Medical Device Regulation (MDR 2017/745) or predecessor MDD. AI/software tools as standalone medical devices are typically classified Class IIa or IIb under MDR, requiring a Notified Body assessment. Many CE-only products do not publicly disclose a clearance date, listed here as "—".</p>
+
+      <h3>Data sources &amp; limitations</h3>
+      <p>FDA data is sourced from the CDRH 510(k)/PMA database. CE data from public registries including AIforRadiology.com and manufacturer disclosures. Performance metrics are sourced from FDA 510(k) submission summaries and peer-reviewed literature; values differ by test cohort, nodule size threshold, and evaluation protocol — always consult the primary source. This database is maintained on a best-effort basis and may not capture every marketed product, particularly CE-only devices with limited public documentation.</p>
+    </div>
+  </details>
+
   <footer>
     <p class="ft-text">
       <strong>Data sources:</strong> FDA 510(k)/PMA database (CDRH); European CE-mark AI registries including AIforRadiology.com; published literature. Products limited to CT-based lung nodule detection and management tools.
@@ -357,6 +393,12 @@
 const ERA_LABELS = {1:'Rule-based', 2:'ML / Radiomics', 3:'Deep learning', 4:'VLM / Multimodal'};
 const ERA_YEARS  = {1:'2001–2009', 2:'2010–2016', 3:'2017–2022', 4:'2023–2026'};
 const ERA_COLORS = {1:'#5F5E5A', 2:'#185FA5', 3:'#2D6A1F', 4:'#8B3A1A'};
+const ERA_DESC   = {
+  1: 'Era 1 — Rule-based (2001–2009): Handcrafted image features (shape, texture, density) fed into decision trees or SVMs. Deterministic logic requiring expert parameter tuning.',
+  2: 'Era 2 — ML / Radiomics (2010–2016): High-dimensional radiomic features combined with classical ML classifiers (SVM, random forest). Features still engineered by domain experts.',
+  3: 'Era 3 — Deep learning (2017–2022): End-to-end CNNs (U-Net, ResNet, 3D-CNN) learning directly from voxel data. Dominant paradigm for FDA clearances.',
+  4: 'Era 4 — VLM / Multimodal (2023–2026): Vision-language foundation models integrating CT imaging with clinical text and multimodal reasoning.',
+};
 const FLAG = {US:'🇺🇸', DE:'🇩🇪', NL:'🇳🇱', FR:'🇫🇷', AT:'🇦🇹', LT:'🇱🇹', PT:'🇵🇹', GB:'🇬🇧', KR:'🇰🇷', CN:'🇨🇳', JP:'🇯🇵', AU:'🇦🇺', IL:'🇮🇱', IN:'🇮🇳'};
 const REGION_NAMES = {US:'United States', DE:'Germany', NL:'Netherlands', FR:'France', AT:'Austria', LT:'Lithuania', PT:'Portugal', GB:'United Kingdom', KR:'South Korea', CN:'China', JP:'Japan', AU:'Australia', IL:'Israel', IN:'India'};
 const CHART_COLORS = ['#185FA5','#2D6A1F','#8B3A1A','#5F5E5A','#7A4F0A','#1A6B3A','#9A968F','#1A4A8A','#5A2E6B','#A03020','#2E6B5A','#6B5A2E','#3A5A8B'];
@@ -667,7 +709,7 @@ function cardHTML(co) {
     </tr>`).join('');
 
   return `
-  <div class="card">
+  <div class="card" data-co="${esc(co.name)}">
     <div class="card-hd" onclick="this.parentElement.classList.toggle('open')">
       <span class="flag">${FLAG[co.region]||''}</span>
       <div class="co-info">
@@ -735,7 +777,7 @@ function initStats() {
 // ── Init era legend ───────────────────────────────────────────────────────────
 function initEraLegend() {
   document.getElementById('eraLegend').innerHTML = [1,2,3,4].map(e=>`
-    <div class="era-chip" onclick="toggleEra(this,'${e}')">
+    <div class="era-chip" onclick="toggleEra(this,'${e}')" title="${ERA_DESC[e]}">
       <span class="era-dot" style="background:${ERA_COLORS[e]}"></span>
       Era ${e} — ${ERA_LABELS[e]}
       <span class="era-yr">${ERA_YEARS[e]}</span>
@@ -1147,7 +1189,7 @@ function perfRowHTML(row) {
   const sensClass = row.sens ? 'p-num p-good' : 'p-num';
   const aucClass  = row.auc  ? 'p-num p-good' : 'p-num';
   return `<tr>
-    <td style="font-size:13px;font-weight:500">${esc(row.co)}</td>
+    <td><button class="perf-co-link" onclick="goToCompany(${JSON.stringify(row.co)})">${esc(row.co)}</button></td>
     <td style="max-width:220px;white-space:normal;font-size:12px;color:var(--ink2)">${esc(row.prod)}</td>
     <td><span class="p-era"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${ERA_COLORS[row.era]}"></span>Era ${row.era}</span></td>
     <td style="font-size:12px;color:var(--ink2);white-space:normal">${esc(row.task||'—')}</td>
@@ -1254,7 +1296,7 @@ function initPerformance() {
   perfInited = true;
   document.getElementById('perfSearch').addEventListener('input', e => { perfQ = e.target.value; renderPerf(); });
   document.getElementById('perf-era-legend').innerHTML = [1,2,3,4].map(e => `
-    <div class="era-chip" onclick="togglePerfEra(this,'${e}')">
+    <div class="era-chip" onclick="togglePerfEra(this,'${e}')" title="${ERA_DESC[e]}">
       <span class="era-dot" style="background:${ERA_COLORS[e]}"></span>
       Era ${e} — ${ERA_LABELS[e]}
       <span class="era-yr">${ERA_YEARS[e]}</span>
@@ -1265,6 +1307,16 @@ function initPerformance() {
   renderPerfRanking('perf-chart-auc', 'auc');
   renderEraPerf('perf-chart-era');
   renderPerf();
+}
+
+// ── Performance → Database link ───────────────────────────────────────────────
+function goToCompany(name) {
+  if (state.q || state.reg || state.region || state.era) clearFilters();
+  switchTab('database');
+  requestAnimationFrame(() => {
+    const card = [...document.querySelectorAll('.card[data-co]')].find(c => c.dataset.co === name);
+    if (card) { card.classList.add('open'); card.scrollIntoView({behavior:'smooth', block:'center'}); }
+  });
 }
 
 // ── Expand all / Collapse all ─────────────────────────────────────────────────
