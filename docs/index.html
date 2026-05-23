@@ -242,6 +242,7 @@
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         Clear
       </button>
+      <button class="export-btn" id="expandAllBtn" onclick="toggleExpandAll()">Expand all</button>
       <span class="result-count" id="resultCount"></span>
     </div>
 
@@ -306,9 +307,16 @@
         <div id="perf-chart-era"></div>
       </div>
     </div>
-    <div class="search-wrap" style="max-width:260px;margin-bottom:12px">
-      <svg class="s-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      <input type="text" id="perfSearch" placeholder="Filter by company or product…">
+    <div class="era-legend" id="perf-era-legend" style="margin-bottom:12px"></div>
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px">
+      <div class="search-wrap" style="flex:none;width:260px">
+        <svg class="s-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="perfSearch" placeholder="Filter by company or product…">
+      </div>
+      <button class="export-btn" onclick="exportPerfCSV()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Export CSV
+      </button>
     </div>
     <div class="perf-wrap">
       <table class="perf-table" id="perf-table">
@@ -708,6 +716,7 @@ function render() {
     : '<div class="empty">No results match your filters.</div>';
   document.getElementById('clearBtn').style.display =
     (state.q || state.reg || state.region || state.era) ? '' : 'none';
+  document.getElementById('expandAllBtn').textContent = 'Expand all';
 }
 
 // ── Init stats ────────────────────────────────────────────────────────────────
@@ -1100,8 +1109,21 @@ const PERF = [
 // ── Performance render ────────────────────────────────────────────────────────
 let perfSort = {col:'era', dir:1};
 let perfQ = '';
+let perfEra = '';
 let perfExpanded = false;
 const PERF_PREVIEW = 3;
+
+function togglePerfEra(chip, e) {
+  if (perfEra === e) {
+    perfEra = '';
+    document.querySelectorAll('#perf-era-legend .era-chip').forEach(c => c.classList.remove('active'));
+  } else {
+    perfEra = e;
+    document.querySelectorAll('#perf-era-legend .era-chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+  }
+  renderPerf();
+}
 
 function numVal(s) {
   if (!s) return -1;
@@ -1142,10 +1164,10 @@ function perfRowHTML(row) {
 
 function renderPerf() {
   const isNum = ['sens','spec','auc','era'].includes(perfSort.col);
-  const base = perfQ
-    ? PERF.filter(r => (r.co||'').toLowerCase().includes(perfQ.toLowerCase()) ||
-                       (r.prod||'').toLowerCase().includes(perfQ.toLowerCase()))
-    : PERF;
+  const base = PERF
+    .filter(r => !perfQ || (r.co||'').toLowerCase().includes(perfQ.toLowerCase()) ||
+                            (r.prod||'').toLowerCase().includes(perfQ.toLowerCase()))
+    .filter(r => !perfEra || r.era === +perfEra);
   const sorted = [...base].sort((a, b) => {
     const av = isNum ? (numVal(a[perfSort.col]) ?? -1) : String(a[perfSort.col] ?? '');
     const bv = isNum ? (numVal(b[perfSort.col]) ?? -1) : String(b[perfSort.col] ?? '');
@@ -1153,7 +1175,7 @@ function renderPerf() {
     return av.localeCompare(bv) * perfSort.dir;
   });
 
-  const showAll = perfExpanded || !!perfQ;
+  const showAll = perfExpanded || !!perfQ || !!perfEra;
   const visible = showAll ? sorted : sorted.slice(0, PERF_PREVIEW);
   const hiddenN = showAll ? 0 : Math.max(0, sorted.length - PERF_PREVIEW);
 
@@ -1231,12 +1253,26 @@ function initPerformance() {
   if (perfInited) return;
   perfInited = true;
   document.getElementById('perfSearch').addEventListener('input', e => { perfQ = e.target.value; renderPerf(); });
+  document.getElementById('perf-era-legend').innerHTML = [1,2,3,4].map(e => `
+    <div class="era-chip" onclick="togglePerfEra(this,'${e}')">
+      <span class="era-dot" style="background:${ERA_COLORS[e]}"></span>
+      Era ${e} — ${ERA_LABELS[e]}
+      <span class="era-yr">${ERA_YEARS[e]}</span>
+    </div>`).join('');
   const el = document.getElementById('ph-era');
   if (el) el.className = 'sort-asc';
   renderPerfRanking('perf-chart-sens', 'sens');
   renderPerfRanking('perf-chart-auc', 'auc');
   renderEraPerf('perf-chart-era');
   renderPerf();
+}
+
+// ── Expand all / Collapse all ─────────────────────────────────────────────────
+function toggleExpandAll() {
+  const cards = document.querySelectorAll('.card');
+  const anyOpen = [...cards].some(c => c.classList.contains('open'));
+  cards.forEach(c => c.classList.toggle('open', !anyOpen));
+  document.getElementById('expandAllBtn').textContent = anyOpen ? 'Expand all' : 'Collapse all';
 }
 
 // ── Export CSV ────────────────────────────────────────────────────────────────
@@ -1255,6 +1291,21 @@ function exportCSV() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url; a.download = 'cad-lcs-database.csv';
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+}
+
+// ── Performance CSV export ────────────────────────────────────────────────────
+function exportPerfCSV() {
+  const rows = [['Company','Product','Era','Era Label','Task','Sensitivity','Specificity','AUC','Context','Dataset','Reference']];
+  PERF.forEach(r => {
+    rows.push([r.co, r.prod, r.era, ERA_LABELS[r.era], r.task||'', r.sens||'', r.spec||'', r.auc||'', r.context||'', r.dataset||'', r.ref||'']);
+  });
+  const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob(['﻿'+csv], {type:'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'cad-lcs-performance.csv';
   document.body.appendChild(a); a.click();
   document.body.removeChild(a); URL.revokeObjectURL(url);
 }
@@ -1278,7 +1329,17 @@ function renderTimeline(containerId) {
   const minY=2001, maxY=2026, W=700, H=160, pad={t:8,r:20,b:36,l:20};
   const cW=W-pad.l-pad.r, cH=H-pad.t-pad.b;
   const DOT_R=4.5, ROW_H=11, baseY=pad.t+cH;
+  const MILESTONES = [
+    {year:2011, label:'NLST'},
+    {year:2013, label:'USPSTF B'},
+    {year:2021, label:'USPSTF rev.'},
+  ];
   let out = `<svg viewBox="0 0 ${W} ${H}" width="100%" style="display:block;overflow:visible">`;
+  MILESTONES.forEach(m => {
+    const mx = n2(pad.l+(m.year-minY)/(maxY-minY)*cW);
+    out += `<line x1="${mx}" y1="${pad.t}" x2="${mx}" y2="${baseY}" stroke="#C4956A" stroke-width="1" stroke-dasharray="3,3" opacity="0.5"/>`;
+    out += `<text x="${n2(+mx+3)}" y="${pad.t+9}" font-size="8" fill="#C4956A" opacity="0.75" font-family="'DM Mono',monospace">${m.label}</text>`;
+  });
   out += `<line x1="${pad.l}" y1="${baseY}" x2="${pad.l+cW}" y2="${baseY}" stroke="#D4CFC6" stroke-width="1"/>`;
   for (let y=minY; y<=maxY; y++) {
     const x = pad.l+(y-minY)/(maxY-minY)*cW;
@@ -1304,6 +1365,18 @@ function renderTimeline(containerId) {
     `</div>`;
   document.getElementById(containerId).innerHTML = out + legend;
 }
+
+// ── Keyboard shortcuts ────────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+    e.preventDefault();
+    switchTab('database');
+    document.getElementById('searchInput').focus();
+  }
+  if (e.key === 'Escape' && document.activeElement.tagName === 'INPUT') {
+    document.activeElement.blur();
+  }
+});
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
 initStats();
