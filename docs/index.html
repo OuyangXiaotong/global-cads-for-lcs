@@ -1326,20 +1326,32 @@ function renderTimeline(containerId) {
   );
   const byYear = {};
   allP.forEach(p => { byYear[p.year] = byYear[p.year]||[]; byYear[p.year].push(p); });
-  const minY=2001, maxY=2026, W=700, H=160, pad={t:8,r:20,b:36,l:20};
+
+  // row:0 = first label row, row:1 = second row (offset down to avoid overlap)
+  const MILESTONES = [
+    {year:1993, label:'PLCO trial',    row:0, tip:'PLCO trial: RCT of annual CXR vs. no screening (NCI, 1993–2004); no mortality benefit'},
+    {year:1999, label:'ELCAP',         row:0, tip:'ELCAP: Spiral CT detects early-stage cancers (Henschke et al., NEJM 1999)'},
+    {year:2002, label:'NLST starts',   row:1, tip:'NLST enrollment begins: 53,454 high-risk participants randomized to LDCT vs. CXR'},
+    {year:2011, label:'NLST results',  row:0, tip:'NLST results: LDCT reduces lung cancer mortality by 20% (Aberle et al., NEJM 2011)'},
+    {year:2013, label:'USPSTF B',      row:1, tip:'USPSTF Grade B recommendation: annual LDCT for high-risk adults aged 55–80 (Dec 2013)'},
+    {year:2015, label:'Medicare',      row:0, tip:'CMS/Medicare coverage for LDCT lung screening begins (Feb 2015)'},
+    {year:2020, label:'NELSON',        row:0, tip:'NELSON trial: LDCT reduces lung cancer mortality 24% in men, 33% in women (de Koning et al., NEJM 2020)'},
+    {year:2021, label:'USPSTF rev.',   row:1, tip:'USPSTF updated recommendation: expanded to age 50–80, ≥20 pack-years (Mar 2021)'},
+  ];
+
+  const minY=1993, maxY=2026, W=700, H=190, pad={t:20,r:20,b:36,l:20};
   const cW=W-pad.l-pad.r, cH=H-pad.t-pad.b;
   const DOT_R=4.5, ROW_H=11, baseY=pad.t+cH;
-  const MILESTONES = [
-    {year:2011, label:'NLST'},
-    {year:2013, label:'USPSTF B'},
-    {year:2021, label:'USPSTF rev.'},
-  ];
+
   let out = `<svg viewBox="0 0 ${W} ${H}" width="100%" style="display:block;overflow:visible">`;
+
   MILESTONES.forEach(m => {
-    const mx = n2(pad.l+(m.year-minY)/(maxY-minY)*cW);
-    out += `<line x1="${mx}" y1="${pad.t}" x2="${mx}" y2="${baseY}" stroke="#C4956A" stroke-width="1" stroke-dasharray="3,3" opacity="0.5"/>`;
-    out += `<text x="${n2(+mx+3)}" y="${pad.t+9}" font-size="8" fill="#C4956A" opacity="0.75" font-family="'DM Mono',monospace">${m.label}</text>`;
+    const mx = pad.l+(m.year-minY)/(maxY-minY)*cW;
+    const labelY = pad.t + 9 + (m.row||0)*13;
+    out += `<line x1="${n2(mx)}" y1="${pad.t}" x2="${n2(mx)}" y2="${baseY}" stroke="#C4956A" stroke-width="1" stroke-dasharray="3,3" opacity="0.5"><title>${m.tip}</title></line>`;
+    out += `<text x="${n2(mx+3)}" y="${labelY}" font-size="8" fill="#C4956A" opacity="0.8" font-family="'DM Mono',monospace"><title>${m.tip}</title>${m.label}</text>`;
   });
+
   out += `<line x1="${pad.l}" y1="${baseY}" x2="${pad.l+cW}" y2="${baseY}" stroke="#D4CFC6" stroke-width="1"/>`;
   for (let y=minY; y<=maxY; y++) {
     const x = pad.l+(y-minY)/(maxY-minY)*cW;
@@ -1348,6 +1360,7 @@ function renderTimeline(containerId) {
       out += `<text x="${n2(x)}" y="${baseY+18}" text-anchor="middle" font-size="9" fill="#9A968F" font-family="'DM Mono',monospace">${y}</text>`;
     }
   }
+
   Object.entries(byYear).forEach(([year,prods]) => {
     const x=pad.l+(+year-minY)/(maxY-minY)*cW;
     [...prods].sort((a,b)=>a.era-b.era).forEach((p,i) => {
@@ -1356,13 +1369,18 @@ function renderTimeline(containerId) {
     });
   });
   out += '</svg>';
-  const legend = `<div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;justify-content:center">` +
+
+  const legend =
+    `<div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;justify-content:center;align-items:center">` +
     [1,2,3,4].map(e =>
       `<span style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--ink2);font-family:'DM Mono',monospace">` +
       `<span style="width:8px;height:8px;border-radius:50%;background:${ERA_COLORS[e]};display:inline-block;flex-shrink:0"></span>` +
       `Era ${e} — ${ERA_LABELS[e]}&ensp;<span style="color:var(--ink3)">${ERA_YEARS[e]}</span></span>`
     ).join('') +
+    `<span style="display:flex;align-items:center;gap:5px;font-size:10px;color:#C4956A;font-family:'DM Mono',monospace">` +
+    `<span style="display:inline-block;width:16px;border-top:1px dashed #C4956A;flex-shrink:0"></span>Clinical milestones</span>` +
     `</div>`;
+
   document.getElementById(containerId).innerHTML = out + legend;
 }
 
