@@ -150,16 +150,20 @@
   .empty{text-align:center;padding:52px;color:var(--ink3);font-family:var(--mono);font-size:13px}
 
   /* performance charts */
-  .pchart-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-bottom:18px}
-  .pchart{border:1px solid var(--rule);border-radius:14px;background:var(--panel);padding:16px 18px 12px;box-shadow:var(--shadow)}
-  .pchart-t{font-family:var(--disp);font-weight:600;font-size:13.5px;margin-bottom:10px}
-  .pchart svg{display:block;width:100%;height:auto}
-  .pchart-note{font-family:var(--mono);font-size:10px;color:var(--ink3);margin-top:6px}
-  .pchart text{fill:var(--ink3);font-family:var(--mono);font-size:9px}
+  .pchart-grid{display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:18px}
+  .pchart{border:1px solid var(--rule);border-radius:14px;background:var(--panel);padding:16px 20px 14px;box-shadow:var(--shadow)}
+  .pchart-t{font-family:var(--disp);font-weight:600;font-size:14px;margin-bottom:12px}
+  .pchart svg{display:block;width:100%;height:auto;overflow:visible}
+  .pchart-note{font-family:var(--mono);font-size:10.5px;color:var(--ink3);margin-top:10px}
+  .pchart text{fill:var(--ink3);font-family:var(--mono);font-size:10px}
+  .pchart text.rl{fill:var(--ink2);font-family:var(--sans);font-size:11.5px}
+  .pchart text.rv{fill:var(--ink);font-weight:600}
   .pchart .cax{stroke:var(--rule)}
-  .pchart .cgrid{stroke:var(--rule);stroke-dasharray:2 3;opacity:.6}
+  .pchart .cgrid{stroke:var(--rule);stroke-dasharray:2 3;opacity:.55}
+  .pchart .conn{stroke:var(--rule)}
   .pchart .cd1{fill:var(--e1)} .pchart .cd2{fill:var(--e2)} .pchart .cd3{fill:var(--e3)} .pchart .cd4{fill:var(--e4)}
-  .pchart .cb1{fill:var(--e1)} .pchart .cb2{fill:var(--e2)} .pchart .cb3{fill:var(--e3)} .pchart .cb4{fill:var(--e4)}
+  .pchart .cs1{stroke:var(--e1)} .pchart .cs2{stroke:var(--e2)} .pchart .cs3{stroke:var(--e3)} .pchart .cs4{stroke:var(--e4)}
+  .pchart .hollow{fill:var(--panel)}
   /* performance table */
   .perf-wrap{border:1px solid var(--rule);border-radius:14px;overflow:hidden;overflow-x:auto;background:var(--panel);box-shadow:var(--shadow)}
   table.perf{width:100%;border-collapse:collapse;font-size:13px;white-space:nowrap}
@@ -258,9 +262,8 @@
       <div class="h2">Reported performance</div>
       <div class="h2-sub">Validation metrics from clearance summaries and peer-reviewed studies · only figures with a traceable source</div>
       <div class="pchart-grid">
-        <div class="pchart"><div class="pchart-t">Sensitivity vs specificity</div><svg id="pc-scatter"></svg><div class="pchart-note" id="pc-scatter-note"></div></div>
-        <div class="pchart"><div class="pchart-t">Detection sensitivity over time</div><svg id="pc-time"></svg></div>
-        <div class="pchart"><div class="pchart-t">Reported metrics by method</div><svg id="pc-method"></svg></div>
+        <div class="pchart"><div class="pchart-t">Sensitivity &amp; specificity, by product</div><svg id="pc-dumbbell"></svg><div class="pchart-note">● sensitivity &nbsp; ○ specificity &nbsp;·&nbsp; colour = method &nbsp;·&nbsp; heterogeneous datasets, not directly comparable</div></div>
+        <div class="pchart"><div class="pchart-t">Reported AUC, by product</div><svg id="pc-auc"></svg></div>
       </div>
       <div class="perf-wrap">
         <table class="perf">
@@ -433,45 +436,41 @@ function perf(){
 
 function perfCharts(){
   const num=x=>{if(!x)return null;const m=(''+x).match(/[\d.]+/);return m?parseFloat(m[0]):null;};
-  const yr=p=>{const m=(p.ref||'').match(/\b(19|20)\d{2}\b/);return m?+m[0]:null;};
-  const rows=PERF.map(p=>({e:p.era,s:num(p.sens),sp:num(p.spec),a:num(p.auc),y:yr(p)}));
-  const W=280,H=176,pl=30,pr=10,pt=10,pb=24, iw=W-pl-pr, ih=H-pt-pb;
+  const rows=PERF.map(p=>({prod:p.prod,e:p.era,s:num(p.sens),sp:num(p.spec),a:num(p.auc)}));
+  const trunc=(t,n)=>t.length>n?t.slice(0,n-1)+'…':t;
+  const W=680, lw=214, pr=34, rh=23;
 
-  // 1. scatter sens vs spec
+  // ── 1. dumbbell: sensitivity (filled) + specificity (hollow) per product ──
   (()=>{
-    const pts=rows.filter(r=>r.s!=null&&r.sp!=null);
-    const X=v=>pl+(v-60)/40*iw, Y=v=>pt+ih-(v-60)/40*ih;
+    const d=rows.filter(r=>r.s!=null||r.sp!=null).sort((a,b)=>a.e-b.e||(b.s||0)-(a.s||0));
+    const pt=8, iw=W-lw-pr, H=pt+d.length*rh+34;
+    const X=v=>lw+(v-40)/60*iw;
     let s='';
-    for(let g=60;g<=100;g+=10){s+=`<line class="cgrid" x1="${X(g)}" y1="${pt}" x2="${X(g)}" y2="${pt+ih}"/><line class="cgrid" x1="${pl}" y1="${Y(g)}" x2="${pl+iw}" y2="${Y(g)}"/><text x="${X(g)}" y="${H-9}" text-anchor="middle">${g}</text><text x="${pl-6}" y="${Y(g)+3}" text-anchor="end">${g}</text>`;}
-    s+=`<text x="${pl+iw/2}" y="${H}" text-anchor="middle">specificity %</text>`;
-    pts.forEach(r=>{s+=`<circle class="cd${r.e}" cx="${X(r.sp)}" cy="${Y(r.s)}" r="4.5" opacity="0.85"/>`;});
-    document.getElementById('pc-scatter').setAttribute('viewBox',`0 0 ${W} ${H}`);
-    document.getElementById('pc-scatter').innerHTML=s;
-    document.getElementById('pc-scatter-note').textContent=pts.length+' products report both · y-axis = sensitivity %';
+    for(let g=40;g<=100;g+=20){s+=`<line class="cgrid" x1="${X(g)}" y1="${pt}" x2="${X(g)}" y2="${pt+d.length*rh}"/><text x="${X(g)}" y="${pt+d.length*rh+16}" text-anchor="middle">${g}%</text>`;}
+    d.forEach((r,i)=>{
+      const y=pt+i*rh+rh/2;
+      s+=`<text class="rl" x="${lw-12}" y="${y+4}" text-anchor="end">${esc(trunc(r.prod,30))}</text>`;
+      if(r.s!=null&&r.sp!=null)s+=`<line class="conn" x1="${X(Math.min(r.s,r.sp))}" y1="${y}" x2="${X(Math.max(r.s,r.sp))}" y2="${y}" stroke-width="1.5"/>`;
+      if(r.sp!=null)s+=`<circle class="cs${r.e} hollow" cx="${X(r.sp)}" cy="${y}" r="4.5" stroke-width="1.8"/>`;
+      if(r.s!=null){s+=`<circle class="cd${r.e}" cx="${X(r.s)}" cy="${y}" r="5"/><text class="rv" x="${X(r.s)+ (r.sp!=null&&r.sp>r.s?-11:11)}" y="${y+3.5}" text-anchor="${r.sp!=null&&r.sp>r.s?'end':'start'}">${r.s}</text>`;}
+    });
+    const el=document.getElementById('pc-dumbbell');el.setAttribute('viewBox',`0 0 ${W} ${H}`);el.innerHTML=s;
   })();
 
-  // 2. sensitivity over time
+  // ── 2. AUC per product (horizontal bars on 0.70–1.00) ──
   (()=>{
-    const pts=rows.filter(r=>r.s!=null&&r.y);
-    const X=v=>pl+(v-2001)/25*iw, Y=v=>pt+ih-(v-60)/40*ih;
+    const d=rows.filter(r=>r.a!=null).sort((a,b)=>a.e-b.e||b.a-a.a);
+    const pt=8, iw=W-lw-pr, H=pt+d.length*rh+34, A0=0.70;
+    const X=v=>lw+(v-A0)/(1-A0)*iw;
     let s='';
-    for(let g=60;g<=100;g+=10){s+=`<line class="cgrid" x1="${pl}" y1="${Y(g)}" x2="${pl+iw}" y2="${Y(g)}"/><text x="${pl-6}" y="${Y(g)+3}" text-anchor="end">${g}</text>`;}
-    [2005,2015,2025].forEach(t=>s+=`<text x="${X(t)}" y="${H-9}" text-anchor="middle">${t}</text>`);
-    s+=`<line class="cax" x1="${pl}" y1="${pt+ih}" x2="${pl+iw}" y2="${pt+ih}"/>`;
-    pts.forEach(r=>{s+=`<circle class="cd${r.e}" cx="${X(r.y)}" cy="${Y(r.s)}" r="4.5" opacity="0.85"/>`;});
-    document.getElementById('pc-time').setAttribute('viewBox',`0 0 ${W} ${H}`);
-    document.getElementById('pc-time').innerHTML=s;
-  })();
-
-  // 3. mean sensitivity by method (bars)
-  (()=>{
-    const bw=iw/4, means=[1,2,3,4].map(e=>{const v=rows.filter(r=>r.e===e&&r.s!=null).map(r=>r.s);return v.length?v.reduce((a,b)=>a+b,0)/v.length:null;});
-    const Y=v=>pt+ih-(v/100)*ih;
-    let s=`<line class="cax" x1="${pl}" y1="${pt+ih}" x2="${pl+iw}" y2="${pt+ih}"/>`;
-    for(let g=0;g<=100;g+=25){s+=`<line class="cgrid" x1="${pl}" y1="${Y(g)}" x2="${pl+iw}" y2="${Y(g)}"/><text x="${pl-6}" y="${Y(g)+3}" text-anchor="end">${g}</text>`;}
-    means.forEach((m,i)=>{const x=pl+i*bw+bw*0.2,w=bw*0.6;if(m!=null){s+=`<rect class="cb${i+1}" x="${x}" y="${Y(m)}" width="${w}" height="${pt+ih-Y(m)}" rx="3"/><text x="${x+w/2}" y="${Y(m)-4}" text-anchor="middle" style="font-weight:600">${Math.round(m)}</text>`;}s+=`<text x="${pl+i*bw+bw/2}" y="${H-9}" text-anchor="middle">${['I','II','III','IV'][i]}</text>`;});
-    document.getElementById('pc-method').setAttribute('viewBox',`0 0 ${W} ${H}`);
-    document.getElementById('pc-method').innerHTML=s;
+    for(let g=0.7;g<=1.001;g+=0.1){s+=`<line class="cgrid" x1="${X(g)}" y1="${pt}" x2="${X(g)}" y2="${pt+d.length*rh}"/><text x="${X(g)}" y="${pt+d.length*rh+16}" text-anchor="middle">${g.toFixed(1)}</text>`;}
+    d.forEach((r,i)=>{
+      const y=pt+i*rh+4, bh=rh-11;
+      s+=`<text class="rl" x="${lw-12}" y="${y+bh/2+4}" text-anchor="end">${esc(trunc(r.prod,30))}</text>`;
+      s+=`<rect class="cd${r.e}" x="${lw}" y="${y}" width="${Math.max(0,X(r.a)-lw)}" height="${bh}" rx="3" opacity="0.9"/>`;
+      s+=`<text class="rv" x="${X(r.a)+6}" y="${y+bh/2+4}">${r.a.toFixed(2)}</text>`;
+    });
+    const el=document.getElementById('pc-auc');el.setAttribute('viewBox',`0 0 ${W} ${H}`);el.innerHTML=s;
   })();
 }
 
