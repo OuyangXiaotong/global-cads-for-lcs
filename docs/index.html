@@ -116,6 +116,22 @@
   .era-hd .cnt{font-family:var(--mono);font-size:11px;color:var(--ec);font-weight:500}
   .prow{display:grid;grid-template-columns:26px 1.4fr 1fr auto;gap:14px;align-items:center;padding:11px 20px;border-top:1px solid var(--rule)}
   .prow:hover{background:var(--panel2)}
+  .prow.can{cursor:pointer}
+  .prow.rowopen{background:var(--panel2)}
+  .ppc{font-family:var(--mono);font-size:10px;color:var(--accent-ink);background:var(--accent-soft);padding:1px 6px;border-radius:100px;margin-left:8px;vertical-align:middle}
+  .pchev{display:inline-block;color:var(--ink3);transition:transform .18s;margin-left:4px}
+  .prow.rowopen .pchev{transform:rotate(180deg)}
+  .pdet{display:none;padding:2px 20px 16px 60px;border-top:1px solid var(--rule);background:var(--panel2)}
+  .pdet.open{display:block}
+  .pblurb{font-size:13px;color:var(--ink2);line-height:1.65;margin:12px 0 4px;max-width:76ch}
+  .plit{margin-top:12px}
+  .plit-h{font-family:var(--mono);font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink3);margin-bottom:8px}
+  .plit-i{display:grid;grid-template-columns:44px 1fr;gap:4px 12px;padding:7px 10px;border-radius:8px;text-decoration:none;transition:background .12s}
+  .plit-i:hover{background:var(--panel)}
+  .plit-y{font-family:var(--mono);font-size:11px;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+  .plit-t{font-size:12.5px;color:var(--ink);line-height:1.45}
+  .plit-j{grid-column:2;font-style:italic;font-size:11px;color:var(--ink3)}
+  .pnone{font-size:12px;color:var(--ink3);font-style:italic;margin-top:10px}
   .pflag{font-size:18px}
   .pmain{min-width:0}
   .pname{font-size:13.5px;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -133,7 +149,18 @@
   mark{background:color-mix(in srgb,var(--accent) 30%,transparent);color:inherit;border-radius:2px}
   .empty{text-align:center;padding:52px;color:var(--ink3);font-family:var(--mono);font-size:13px}
 
-  /* performance */
+  /* performance charts */
+  .pchart-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-bottom:18px}
+  .pchart{border:1px solid var(--rule);border-radius:14px;background:var(--panel);padding:16px 18px 12px;box-shadow:var(--shadow)}
+  .pchart-t{font-family:var(--disp);font-weight:600;font-size:13.5px;margin-bottom:10px}
+  .pchart svg{display:block;width:100%;height:auto}
+  .pchart-note{font-family:var(--mono);font-size:10px;color:var(--ink3);margin-top:6px}
+  .pchart text{fill:var(--ink3);font-family:var(--mono);font-size:9px}
+  .pchart .cax{stroke:var(--rule)}
+  .pchart .cgrid{stroke:var(--rule);stroke-dasharray:2 3;opacity:.6}
+  .pchart .cd1{fill:var(--e1)} .pchart .cd2{fill:var(--e2)} .pchart .cd3{fill:var(--e3)} .pchart .cd4{fill:var(--e4)}
+  .pchart .cb1{fill:var(--e1)} .pchart .cb2{fill:var(--e2)} .pchart .cb3{fill:var(--e3)} .pchart .cb4{fill:var(--e4)}
+  /* performance table */
   .perf-wrap{border:1px solid var(--rule);border-radius:14px;overflow:hidden;overflow-x:auto;background:var(--panel);box-shadow:var(--shadow)}
   table.perf{width:100%;border-collapse:collapse;font-size:13px;white-space:nowrap}
   table.perf th{text-align:left;padding:11px 15px;font-family:var(--mono);font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink3);border-bottom:1px solid var(--rule);background:var(--panel2)}
@@ -193,9 +220,9 @@
 
 <main>
   <header>
-    <div class="eyebrow">Product-first systematic review · 2001–2026</div>
-    <h1>Commercial lung-cancer-screening <em>CAD software</em>, catalogued</h1>
-    <p class="lede">The <b>47 commercially cleared CAD/AI products</b> from <b>32 developers</b> that met the inclusion criteria of a product-first review of CT lung cancer screening — traced from the first FDA-approved system (2001) to today's multimodal era, and matched to their regulatory clearances and validation evidence.</p>
+    <div class="eyebrow">Commercial CAD / AI · CT lung cancer screening</div>
+    <h1>A catalogue of lung-cancer-screening <em>CAD software</em></h1>
+    <p class="lede"><b>47 commercially cleared CAD/AI products</b> from <b>32 developers</b> for CT lung cancer screening — from the first FDA-approved system in 2001 to today's deep-learning and multimodal tools. Each is grouped by the <b>method it actually uses</b>, and linked to its regulatory clearances and to the papers that evaluate it.</p>
   </header>
 
   <!-- DATABASE -->
@@ -203,15 +230,15 @@
     <div class="stats" id="stats"></div>
 
     <section class="block">
-      <div class="h2">Four technology eras, 2001–2026</div>
-      <div class="h2-sub">Each product placed at its first regulatory clearance · colour = AI era · hover a point for detail</div>
+      <div class="h2">By method, over time</div>
+      <div class="h2-sub">Each product at its first clearance · colour = the method it uses, not its year · hover for detail</div>
       <div class="tl-wrap"><svg id="timeline" class="tl-svg" aria-label="Timeline of products by year and era"></svg></div>
       <div class="era-key" id="eraKey"></div>
     </section>
 
     <section class="block">
       <div class="h2">The catalogue</div>
-      <div class="h2-sub">Included products, grouped by era · FDA 510(k)/PMA and CE-marked</div>
+      <div class="h2-sub">Grouped by method · FDA 510(k)/PMA and CE-marked · click a product for its description and papers</div>
       <div class="controls">
         <div class="search">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
@@ -230,6 +257,11 @@
     <section class="block" style="margin-top:8px">
       <div class="h2">Reported performance</div>
       <div class="h2-sub">Validation metrics from clearance summaries and peer-reviewed studies · only figures with a traceable source</div>
+      <div class="pchart-grid">
+        <div class="pchart"><div class="pchart-t">Sensitivity vs specificity</div><svg id="pc-scatter"></svg><div class="pchart-note" id="pc-scatter-note"></div></div>
+        <div class="pchart"><div class="pchart-t">Detection sensitivity over time</div><svg id="pc-time"></svg></div>
+        <div class="pchart"><div class="pchart-t">Reported metrics by method</div><svg id="pc-method"></svg></div>
+      </div>
       <div class="perf-wrap">
         <table class="perf">
           <thead><tr><th>Developer</th><th>Product</th><th>Task</th><th>Sens.</th><th>Spec.</th><th>AUC</th><th>Dataset / context</th><th>Source</th></tr></thead>
@@ -243,25 +275,27 @@
   <!-- METHODS -->
   <div id="tab-methods" class="hidden">
     <section class="block" style="margin-top:8px">
-      <div class="h2">How this list was built</div>
-      <div class="h2-sub">Product-first systematic search · full method in the review's SEARCH_STRATEGY</div>
+      <div class="h2">How this catalogue is built</div>
+      <div class="h2-sub">Compiled from regulatory databases, then matched to the literature</div>
       <div class="note">
-        <h3>Inverted workflow</h3>
-        <p>Unlike a conventional review that starts from the literature, this catalogue starts from <b>regulatory databases</b>. A candidate catalogue is built from FDA 510(k) + PMA clearances, the FDA AI/ML-enabled device list, and CE-marked products (AIforRadiology), then PubMed is searched for those specific product names. Generic topic queries are avoided — they return academic prototypes with no named commercial product.</p>
-        <h3>Reproducible completeness</h3>
-        <p>FDA name-based queries miss products branded without an anatomical word (e.g. <code>AVIEW</code>, <code>qCT LN Quant</code>). A reproducible <b>manufacturer-based supplementary search</b> recovers them — for every developer identified, its clearances under the lung-relevant product codes are retrieved regardless of device name. No hand-curated list is used as a search input.</p>
-        <h3>Scope of this catalogue</h3>
-        <p>From <b>130 candidate products</b>, scope pre-screening (CT nodule detection / characterisation / LCS workflow; commercially cleared) yields the <b>52 included</b> products shown here, consolidated to <b>47</b> after merging near-duplicate clearance variants. Out-of-scope tools — scanner acquisition options, pulmonary-function software, general PACS, and other-organ platforms — are excluded.</p>
-        <h3>Evidence corpus</h3>
-        <p>A PubMed query built from the included products returns <b>194 papers</b> (product-name + commercial-context queries), the evidence base from which the performance figures are drawn.</p>
+        <h3>Products first</h3>
+        <p>The catalogue is built from <b>regulatory databases</b>, not from the literature. Candidate products come from FDA 510(k) + PMA clearances, the FDA AI/ML-enabled device list, and CE-marked products (AIforRadiology); PubMed is then searched for those specific product names. This keeps the focus on commercially deployed software rather than academic prototypes.</p>
+        <h3>Finding every product</h3>
+        <p>Name-based FDA queries miss products branded without an anatomical word (e.g. <code>AVIEW</code>, <code>qCT LN Quant</code>). A reproducible <b>manufacturer-based search</b> recovers them — for every developer identified, its clearances under the lung-relevant product codes are retrieved regardless of device name.</p>
+        <h3>What's included</h3>
+        <p>Candidates are screened to CT tools whose task is <b>lung nodule detection, characterisation, or the screening workflow</b>. Scanner acquisition options, pulmonary-function software, general PACS, and other-organ platforms are excluded. Near-duplicate clearance variants of one product are merged.</p>
+        <h3>Method classification</h3>
+        <p>Each product is grouped by the <b>method it actually uses</b> — rule-based, classical ML/radiomics, deep learning, or multimodal/foundation — determined from the product itself, not inferred from its clearance year.</p>
+        <h3>Linked papers</h3>
+        <p>Each product links to papers in the search corpus that name it. These are automatic name matches; a paper may describe the product in a context other than screening, and many products have no dedicated publication yet.</p>
         <h3>Sources</h3>
-        <p>openFDA 510(k) &amp; PMA · FDA AI/ML-Enabled Devices list · AIforRadiology.com (CE) · PubMed / NCBI E-utilities. Regulatory numbers link to the FDA 510(k) database. Corrections welcome via <a href="https://github.com/OuyangXiaotong/global-cads-for-lcs/issues/new?title=Suggestion%3A+" target="_blank" rel="noopener">Suggest an edit</a>.</p>
+        <p>openFDA 510(k) &amp; PMA · FDA AI/ML-Enabled Devices list · AIforRadiology.com (CE) · PubMed / NCBI E-utilities. Regulatory numbers link to the FDA database; papers link to PubMed. Corrections welcome via <a href="https://github.com/OuyangXiaotong/global-cads-for-lcs/issues/new?title=Suggestion%3A+" target="_blank" rel="noopener">Suggest an edit</a>.</p>
       </div>
     </section>
   </div>
 
   <footer>
-    <div class="ft-t">A reference catalogue of the commercial lung-CAD products included in a product-first systematic review (Chapter 1). Regulatory status compiled from public FDA and CE records; <b>metrics are indicative, not a benchmark</b>. Not medical advice.</div>
+    <div class="ft-t">A reference catalogue of commercial lung-CAD software for CT lung cancer screening. Regulatory status compiled from public FDA and CE records; <b>metrics are indicative, not a benchmark</b>. Not medical advice.</div>
     <div class="ft-b"><div class="n">Lung-CAD Atlas</div><div class="m">2001–2026 · 47 products</div></div>
   </footer>
 </main>
@@ -272,19 +306,23 @@
 const FLAG={AT:'🇦🇹',AU:'🇦🇺',CN:'🇨🇳',DE:'🇩🇪',FR:'🇫🇷',GB:'🇬🇧',IN:'🇮🇳',JP:'🇯🇵',KR:'🇰🇷',NL:'🇳🇱',PT:'🇵🇹',US:'🇺🇸'};
 const REGION_NAME={AT:'Austria',AU:'Australia',CN:'China',DE:'Germany',FR:'France',GB:'United Kingdom',IN:'India',JP:'Japan',KR:'South Korea',NL:'Netherlands',PT:'Portugal',US:'United States'};
 const ERA={
- 1:{name:'Rule-based',years:'2001–2010',color:'var(--e1)',hex:'#9b8a72',desc:'Thresholding, region-growing, geometric & morphological filters'},
- 2:{name:'Feature ML / radiomics',years:'2011–2016',color:'var(--e2)',hex:'#4f97a0',desc:'Hand-crafted features, classical classifiers (SVM, random forest)'},
- 3:{name:'Deep learning',years:'2017–2022',color:'var(--e3)',hex:'#2b7fb8',desc:'End-to-end CNNs, U-Net, 3D — the LUNA16 era'},
- 4:{name:'Vision-language / multimodal',years:'2023–2026',color:'var(--e4)',hex:'#6a5bd0',desc:'Transformers, contrastive & generative decoding, NL output'}
+ 1:{name:'Rule-based',color:'var(--e1)',hex:'#9b8a72',desc:'Thresholding, region-growing and morphological filters with explicit decision rules'},
+ 2:{name:'Classical ML / radiomics',color:'var(--e2)',hex:'#4f97a0',desc:'Hand-crafted features with classical classifiers; feature-based volumetric analysis'},
+ 3:{name:'Deep learning',color:'var(--e3)',hex:'#2b7fb8',desc:'End-to-end learned CNNs and 3D networks'},
+ 4:{name:'Multimodal / foundation',color:'var(--e4)',hex:'#6a5bd0',desc:'Transformer and multi-finding foundation models with report generation'}
 };
 const WEB={'Riverain Technologies':'https://www.riveraintech.com','GE Healthcare':'https://www.gehealthcare.com','Siemens Healthineers':'https://www.siemens-healthineers.com','Philips':'https://www.philips.com/healthcare','Median Technologies':'https://www.mediantechnologies.com','Hologic':'https://www.hologic.com','Fujifilm':'https://www.fujifilm.com/us/en/healthcare','Canon / Toshiba Medical':'https://global.medical.canon','Coreline Soft':'https://www.corelinesoft.com','Infervision':'https://www.infervision.com','MeVis Medical Solutions':'https://www.mevis.de','Optellum':'https://optellum.com','Samsung Electronics':'https://www.samsunghealthcare.com','Imagen Technologies':'https://www.imagen.ai','Brainomix':'https://www.brainomix.com','Qure.ai':'https://qure.ai','AZmed':'https://azmed.co','V5med':'https://www.v5med.com','Exo':'https://www.exo.inc','RevealDx':'https://revealdx.com','contextflow':'https://contextflow.com','DeepHealth':'https://deephealth.ai','GLEAMER':'https://www.gleamer.ai','Harrison.ai':'https://harrison.ai','JLK':'https://www.jlkgroup.com','Monitor Corporation':'https://www.monitornet.co.jp','Rayscape':'https://rayscape.ai','SenseTime':'https://www.sensetime.com/en','United Imaging Intelligence':'https://www.uii-ai.com'};
 
 const DATA=[{"name":"Riverain Technologies","region":"US","products":[{"name":"RapidScreen RS-2000","fda":"P000041","year":2001,"ce":false,"era":1},{"name":"ClearRead CT","fda":"K221612","year":2016,"ce":true,"era":2}]},{"name":"GE Healthcare","region":"US","products":[{"name":"Advanced Lung Analysis-1","fda":"K013381","year":2001,"ce":false,"era":1}]},{"name":"Siemens Healthineers","region":"DE","products":[{"name":"LungCare CT Software Package","fda":"K022013","year":2002,"ce":false,"era":1},{"name":"syngo Lung CAD","fda":"K063877","year":2006,"ce":false,"era":1},{"name":"syngo.CT Lung CAD (Version VD30)","fda":"K231157","year":2015,"ce":false,"era":3},{"name":"AI-Rad Companion (Pulmonary)","fda":"K233753","year":2019,"ce":false,"era":3}]},{"name":"R2 Technology","region":"US","products":[{"name":"ImageChecker-CT Workstation","fda":"K023003","year":2002,"ce":false,"era":1}]},{"name":"Philips","region":"NL","products":[{"name":"Lung Nodule Assessment and Comparison Option (LNA)","fda":"K162484","year":2003,"ce":false,"era":1}]},{"name":"Medicsight","region":"GB","products":[{"name":"MedicLung","fda":"K033412","year":2003,"ce":false,"era":1},{"name":"Lung CAR 1.1","fda":"K041807","year":2004,"ce":false,"era":1}]},{"name":"Median Technologies","region":"FR","products":[{"name":"LMS-LUNG/TRACK","fda":"K070868","year":2007,"ce":false,"era":1},{"name":"Median LCS / eyonis LCS","fda":"K251474","year":2026,"ce":false,"era":4}]},{"name":"Hologic","region":"US","products":[{"name":"ImageChecker CT CAD","fda":"K043617","year":2007,"ce":false,"era":1}]},{"name":"Fujifilm","region":"JP","products":[{"name":"Synapse 3D Lung & Abdomen Analysis","fda":"K130542","year":2011,"ce":false,"era":2},{"name":"Synapse 3D Nodule Analysis","fda":"K120679","year":2012,"ce":false,"era":2}]},{"name":"Canon / Toshiba Medical","region":"JP","products":[{"name":"SureSubtraction Lung","fda":"K133324","year":2014,"ce":false,"era":2}]},{"name":"Coreline Soft","region":"KR","products":[{"name":"AVIEW","fda":"K243689","year":2018,"ce":true,"era":3},{"name":"AVIEW Modeler","fda":"K192040","year":2019,"ce":false,"era":3},{"name":"AVIEW LCS","fda":"K193220","year":2020,"ce":true,"era":3},{"name":"AVIEW Lung Nodule CAD","fda":"K251203","year":2023,"ce":false,"era":3},{"name":"Med-LungCT AI","fda":null,"year":null,"ce":true,"era":3}]},{"name":"Infervision","region":"CN","products":[{"name":"InferRead Lung CT.AI","fda":"K240554","year":2020,"ce":false,"era":3},{"name":"InferRead CT Lung","fda":null,"year":null,"ce":true,"era":3}]},{"name":"MeVis Medical Solutions","region":"DE","products":[{"name":"Veolity","fda":"K201501","year":2021,"ce":true,"era":3}]},{"name":"Optellum","region":"GB","products":[{"name":"Virtual Nodule Clinic","fda":"K202300","year":2021,"ce":true,"era":3}]},{"name":"Samsung Electronics","region":"KR","products":[{"name":"Auto Lung Nodule Detection","fda":"K201560","year":2021,"ce":false,"era":3}]},{"name":"Imagen Technologies","region":"US","products":[{"name":"Lung-CAD","fda":"K230085","year":2023,"ce":false,"era":3}]},{"name":"Brainomix","region":"GB","products":[{"name":"Brainomix 360 e-Lung","fda":"K242411","year":2024,"ce":false,"era":4}]},{"name":"Qure.ai","region":"IN","products":[{"name":"qCT LN Quant","fda":"K240740","year":2024,"ce":false,"era":3},{"name":"qCT-Lung","fda":null,"year":null,"ce":true,"era":3}]},{"name":"AZmed","region":"FR","products":[{"name":"Rayvolve LN","fda":"K243831","year":2025,"ce":false,"era":4},{"name":"AZnod","fda":null,"year":null,"ce":true,"era":3}]},{"name":"V5med","region":"US","products":[{"name":"V5med Lung AI","fda":"K242919","year":2025,"ce":false,"era":4}]},{"name":"Exo","region":"US","products":[{"name":"Lung AI (LAI001)","fda":"K243239","year":2025,"ce":false,"era":4}]},{"name":"RevealDx","region":"US","products":[{"name":"RevealAI-Lung","fda":"K251769","year":2026,"ce":true,"era":3}]},{"name":"contextflow","region":"AT","products":[{"name":"contextflow ADVANCE Chest CT","fda":null,"year":null,"ce":true,"era":3}]},{"name":"DeepHealth","region":"NL","products":[{"name":"Lung Check (Veye Lung Nodules)","fda":null,"year":null,"ce":true,"era":3}]},{"name":"GLEAMER","region":"FR","products":[{"name":"LungCT","fda":null,"year":null,"ce":true,"era":3}]},{"name":"Harrison.ai","region":"AU","products":[{"name":"Harrison CT Chest","fda":null,"year":null,"ce":true,"era":4}]},{"name":"HY Medical","region":"CN","products":[{"name":"CT AI-assisted Lung Nodule Detection","fda":null,"year":null,"ce":true,"era":3}]},{"name":"JLK","region":"KR","products":[{"name":"JLD-01K","fda":null,"year":null,"ce":true,"era":3}]},{"name":"Monitor Corporation","region":"JP","products":[{"name":"LuCAS-Plus","fda":null,"year":null,"ce":true,"era":3}]},{"name":"Rayscape","region":"PT","products":[{"name":"Lung CT","fda":null,"year":null,"ce":true,"era":3}]},{"name":"SenseTime","region":"CN","products":[{"name":"SenseCare-Lung Pro","fda":null,"year":null,"ce":true,"era":3}]},{"name":"United Imaging Intelligence","region":"CN","products":[{"name":"CT Pulmonary Nodules 3D Analysis","fda":null,"year":null,"ce":true,"era":3},{"name":"uAI-Discover Chest CT","fda":null,"year":null,"ce":true,"era":3}]}];
 const PERF=[{"co":"R2 Technology","prod":"ImageChecker-CT Workstation","era":1,"task":"Nodule detection","sens":"71%","spec":null,"auc":null,"context":"2 FP/scan","dataset":"ELCAP multi-site","ref":"Wormanns et al., Eur Radiol 2004","refUrl":null},{"co":"Siemens / Siemens Healthineers","prod":"LungCare CT Software Package","era":1,"task":"Nodule detection","sens":"70%","spec":null,"auc":null,"context":"4 FP/scan","dataset":"Clinical CT (n=34)","ref":"Wormanns et al., Eur Radiol 2004","refUrl":null},{"co":"Median Technologies","prod":"LMS-LUNG/TRACK","era":1,"task":"Nodule tracking","sens":null,"spec":null,"auc":"0.80","context":"Volume measurement reproducibility","dataset":"NELSON trial subset","ref":"Gietema et al., Eur Radiol 2010","refUrl":null},{"co":"Riverain Technologies","prod":"ClearRead CT","era":2,"task":"Nodule detection (reader study)","sens":null,"spec":null,"auc":"0.89","context":"Reader AUC improvement","dataset":"Clinical CT multi-reader","ref":"FDA 510(k) K161201","refUrl":"https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K161201"},{"co":"Siemens / Siemens Healthineers","prod":"syngo.CT Lung CAD","era":3,"task":"Nodule detection","sens":"91%","spec":null,"auc":null,"context":"4 FP/scan","dataset":"Multi-site clinical CT","ref":"FDA 510(k) K193216","refUrl":"https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K193216"},{"co":"Coreline Soft","prod":"AVIEW LCS","era":3,"task":"Nodule detection","sens":"91%","spec":"86%","auc":null,"context":"Per-nodule, ≥3 mm","dataset":"Clinical CT (Korea, n=410)","ref":"Lee et al., Korean J Radiol 2020","refUrl":null},{"co":"Optellum","prod":"Optellum Virtual Nodule Clinic","era":3,"task":"Malignancy prediction","sens":"86%","spec":"76%","auc":"0.87","context":"12-month malignancy risk","dataset":"NHS Lung Health Check","ref":"Baldwin et al., Thorax 2023","refUrl":null},{"co":"Coreline Soft","prod":"AVIEW Lung Nodule CAD","era":3,"task":"Nodule detection","sens":"94%","spec":"88%","auc":"0.96","context":"Per-nodule","dataset":"Multi-site CT","ref":"FDA 510(k) K221592","refUrl":"https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K221592"},{"co":"Siemens / Siemens Healthineers","prod":"syngo.CT Lung CAD VD30","era":3,"task":"Nodule detection","sens":"95%","spec":null,"auc":null,"context":"4 FP/scan, ≥4 mm nodules","dataset":"Multi-site CT","ref":"FDA 510(k) K231157","refUrl":"https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K231157"},{"co":"GE Medical Systems / GE Healthcare","prod":"Advanced Lung Analysis II / Lung VCAR","era":1,"task":"Nodule detection","sens":"80%","spec":null,"auc":null,"context":"4 FP/scan","dataset":"ELCAP multi-site","ref":"Rubin et al., Radiology 2005","refUrl":null},{"co":"Imagen Technologies","prod":"Lung-CAD","era":3,"task":"Nodule detection","sens":"91%","spec":"84%","auc":null,"context":"Per-patient","dataset":"Multi-site CT","ref":"FDA 510(k) K223811","refUrl":"https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K223811"},{"co":"Infervision","prod":"InferRead Lung CT.AI","era":3,"task":"Nodule detection","sens":"93%","spec":"89%","auc":"0.95","context":"Per-nodule, ≥3 mm","dataset":"Multi-site CT (Asia)","ref":"FDA 510(k) K240554","refUrl":"https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K240554"},{"co":"V5med","prod":"V5med Lung AI","era":4,"task":"Nodule detection","sens":"91%","spec":"88%","auc":"0.94","context":"Per-nodule","dataset":"Multi-site CT","ref":"FDA 510(k) K242919","refUrl":"https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K242919"},{"co":"Exo Inc","prod":"Lung AI (LAI001)","era":4,"task":"Nodule detection","sens":"90%","spec":"85%","auc":null,"context":"Per-patient","dataset":"Multi-site CT","ref":"FDA 510(k) K243239","refUrl":"https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K243239"},{"co":"AZmed","prod":"Rayvolve LN","era":4,"task":"Nodule detection","sens":"92%","spec":"87%","auc":null,"context":"Per-nodule","dataset":"Multi-site CT","ref":"FDA 510(k) K243831","refUrl":"https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K243831"},{"co":"Median Technologies","prod":"eyonis LCS 1.0","era":4,"task":"Nodule detection","sens":"95%","spec":null,"auc":"0.96","context":"Per-nodule, ≥4 mm","dataset":"NLST + NELSON subset","ref":"FDA 510(k) K251474","refUrl":"https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K251474"}];
+const ENRICH={"RapidScreen RS-2000":[1,"Chest-radiograph CAD — the first FDA-approved lung nodule detector; hand-crafted feature filters flag suspicious opacities."],"Advanced Lung Analysis-1":[1,"CT nodule detection and volumetry via geometric and morphological filtering."],"ImageChecker-CT Workstation":[1,"Classic second-reader CADe: morphological candidate detection marks suspected nodules on CT."],"LungCare CT Software Package":[1,"CT nodule detection with volumetric follow-up on the syngo workstation."],"Lung Nodule Assessment and Comparison Option (LNA)":[1,"Nodule assessment and serial-comparison option on the Philips CT workstation."],"syngo Lung CAD":[2,"Feature-based second-reader nodule CAD integrated into the syngo reading environment."],"MedicLung":[2,"Feature-based candidate detection and scoring of pulmonary nodules on CT."],"Lung CAR 1.1":[2,"Computer-aided reading of pulmonary nodules with hand-crafted feature classifiers."],"ImageChecker CT CAD":[1,"Nodule CADe of the R2 / Hologic lineage for thin-section chest CT."],"LMS-LUNG/TRACK":[2,"Nodule volumetry and growth tracking; volume-measurement reproducibility validated in NELSON."],"Synapse 3D Lung & Abdomen Analysis":[2,"Multi-organ 3D analysis suite with a hand-engineered lung nodule segmentation module."],"Synapse 3D Nodule Analysis":[2,"Nodule segmentation and volumetric quantification within Synapse 3D."],"SureSubtraction Lung":[1,"Temporal subtraction of serial CT to reveal interval change in nodules by image processing."],"ClearRead CT":[3,"Convolutional vessel-suppression plus learned nodule detection and volumetric change tracking."],"syngo.CT Lung CAD (Version VD30)":[3,"Deep-learning rebuild of syngo Lung CAD for second-reader nodule detection."],"AVIEW":[3,"Deep-learning LDCT screening suite: nodule detection, Lung-RADS, emphysema and coronary calcium."],"AVIEW Modeler":[3,"3D segmentation and modeling companion to the AVIEW platform."],"AVIEW LCS":[3,"Lung cancer screening configuration of AVIEW with automated Lung-RADS reporting."],"AVIEW Lung Nodule CAD":[3,"Dedicated deep-learning nodule detection and characterization."],"Med-LungCT AI":[3,"Deep-learning nodule detection, classification and Lung-RADS reporting."],"InferRead Lung CT.AI":[3,"Deep-learning nodule detection and characterization for screening CT."],"InferRead CT Lung":[3,"Lung cancer screening solution: nodule detection with multi-timepoint analysis and reporting."],"Veolity":[3,"Reading solution for nodule management: CAD of solid / subsolid nodules with volumetric temporal comparison."],"Virtual Nodule Clinic":[3,"Deep-learning malignancy risk score (Lung Cancer Prediction CNN) for indeterminate nodules."],"Auto Lung Nodule Detection":[3,"Deep-learning nodule detection integrated with Samsung CT scanners."],"AI-Rad Companion (Pulmonary)":[3,"Deep-learning chest-CT nodule detection and volumetry delivered as a cloud / edge companion."],"Lung-CAD":[3,"Deep-learning nodule detection on chest CT."],"Brainomix 360 e-Lung":[3,"Deep-learning lung nodule module of the Brainomix 360 imaging platform."],"qCT LN Quant":[3,"Deep-learning lung nodule detection and quantification."],"qCT-Lung":[3,"Deep-learning nodule detection with emphysema flagging for opportunistic screening."],"Rayvolve LN":[3,"Deep-learning lung nodule detection."],"V5med Lung AI":[3,"Deep-learning nodule detection and characterization."],"Lung AI (LAI001)":[3,"Deep-learning lung nodule detection."],"Median LCS / eyonis LCS":[3,"Deep-learning lung cancer screening detector; validated against NLST / NELSON."],"RevealAI-Lung":[3,"Radiomics / deep-learning malignancy similarity index (mSI) for nodule characterization."],"AZnod":[3,"Deep-learning nodule detection, characterization and classification."],"contextflow ADVANCE Chest CT":[4,"Learned content-based image retrieval plus anomaly detection across chest-CT patterns."],"Lung Check (Veye Lung Nodules)":[3,"AI nodule detection, classification and growth tracking, in routine European use."],"LungCT":[3,"Deep-learning malignancy detection and localization of pulmonary lesions."],"Harrison CT Chest":[4,"Multi-finding chest-CT foundation model (up to ~167 features) with automated report generation."],"CT AI-assisted Lung Nodule Detection":[3,"Nodule detection, localization, volume quantification and malignancy scoring."],"JLD-01K":[3,"Deep-learning nodule detection with Lung-RADS and Vancouver risk and report generation."],"LuCAS-Plus":[3,"Nodule detection, characterization and longitudinal follow-up."],"Lung CT":[3,"Deep-learning nodule detection, sizing and automatic comparison across serial CT."],"SenseCare-Lung Pro":[3,"Nodule detection, ground-glass analysis and automated structured reporting."],"CT Pulmonary Nodules 3D Analysis":[3,"3D nodule reconstruction with benign / malignant analysis and graphical reports."],"uAI-Discover Chest CT":[3,"Nodule detection with benign / malignant prediction, Lung-RADS and follow-up analysis."]};
+const PAPERS={"RapidScreen RS-2000":[{"p":"20966775","t":"A comparison of four versions of a computer-aided detection system for pulmonary nodules on chest radiographs.","j":"Journal of thoracic imaging","y":"2012"},{"p":"18206625","t":"Heat maps: an aid for data analysis and understanding of ROC CAD experiments.","j":"Academic radiology","y":"2008"}],"ImageChecker-CT Workstation":[{"p":"22526116","t":"[Computer-assisted diagnostic procedure for multislice computed tomography for assessment of the pulmonary arterial circulation. Clinical relevance].","j":"Der Radiologe","y":"2012"},{"p":"22267933","t":"Can computer assisted diagnosis (CAD) be used as a screening tool in the detection of pulmonary nodules when using 64-slice multidetector computed tomography?","j":"International journal of general medicine","y":"2011"},{"p":"19204454","t":"The use of computer-aided detection for the assessment of pulmonary arterial filling defects at computed tomographic angiography.","j":"Journal of computer assisted tomography","y":"2008"},{"p":"18043386","t":"Computer-aided detection of pulmonary embolism on CT angiography: initial experience.","j":"Journal of thoracic imaging","y":"2007"},{"p":"18043385","t":"Pulmonary embolism: computer-aided detection at multidetector row spiral computed tomography.","j":"Journal of thoracic imaging","y":"2007"},{"p":"17057074","t":"Small pulmonary nodules: effect of two computer-aided detection systems on radiologist performance.","j":"Radiology","y":"2006"},{"p":"15968147","t":"Lung nodule detection on chest CT: evaluation of a computer-aided detection (CAD) system.","j":"Korean journal of radiology","y":"2005"}],"LungCare CT Software Package":[{"p":"15237336","t":"Diagnostic performance of a commercially available computer-aided diagnosis system for automatic detection of pulmonary nodules: comparison with single and double reading.","j":"RoFo : Fortschritte auf dem Gebiete der Rontgenstrahlen und der Nuklearmedizin","y":"2004"}],"Lung CAR 1.1":[{"p":"22267933","t":"Can computer assisted diagnosis (CAD) be used as a screening tool in the detection of pulmonary nodules when using 64-slice multidetector computed tomography?","j":"International journal of general medicine","y":"2011"},{"p":"19940969","t":"[Three-dimensional reconstruction of central lung tumors based on CT data].","j":"Der Chirurg; Zeitschrift fur alle Gebiete der operativen Medizen","y":"2010"}],"ImageChecker CT CAD":[{"p":"22526116","t":"[Computer-assisted diagnostic procedure for multislice computed tomography for assessment of the pulmonary arterial circulation. Clinical relevance].","j":"Der Radiologe","y":"2012"},{"p":"22267933","t":"Can computer assisted diagnosis (CAD) be used as a screening tool in the detection of pulmonary nodules when using 64-slice multidetector computed tomography?","j":"International journal of general medicine","y":"2011"},{"p":"19204454","t":"The use of computer-aided detection for the assessment of pulmonary arterial filling defects at computed tomographic angiography.","j":"Journal of computer assisted tomography","y":"2008"},{"p":"18043386","t":"Computer-aided detection of pulmonary embolism on CT angiography: initial experience.","j":"Journal of thoracic imaging","y":"2007"},{"p":"18043385","t":"Pulmonary embolism: computer-aided detection at multidetector row spiral computed tomography.","j":"Journal of thoracic imaging","y":"2007"},{"p":"17057074","t":"Small pulmonary nodules: effect of two computer-aided detection systems on radiologist performance.","j":"Radiology","y":"2006"},{"p":"15968147","t":"Lung nodule detection on chest CT: evaluation of a computer-aided detection (CAD) system.","j":"Korean journal of radiology","y":"2005"}],"ClearRead CT":[{"p":"41219315","t":"Evaluation of an artificial intelligence model for opportunistic Agatston scoring on non-gated chest computed tomography.","j":"Scientific reports","y":"2025"},{"p":"40351013","t":"Real-world Evaluation of Computer-aided Pulmonary Nodule Detection Software Sensitivity and False Positive Rate.","j":"Journal of thoracic imaging","y":"2025"},{"p":"30706143","t":"Computer-Aided Detection of Pulmonary Nodules in Computed Tomography Using ClearReadCT.","j":"Journal of medical systems","y":"2019"},{"p":"29571809","t":"Vessel suppressed chest Computed Tomography for semi-automated volumetric measurements of solid pulmonary nodules.","j":"European journal of radiology","y":"2018"},{"p":"25279774","t":"Bone suppression increases the visibility of invasive pulmonary aspergillosis in chest radiographs.","j":"PloS one","y":"2014"},{"p":"24625084","t":"New methods for using computer-aided detection information for the detection of lung nodules on chest radiographs.","j":"The British journal of radiology","y":"2014"},{"p":"24113431","t":"Bone suppressed images improve radiologists' detection performance for pulmonary nodules in chest radiographs.","j":"European journal of radiology","y":"2013"}],"AVIEW":[{"p":"41551461","t":"Single-inspiratory quantitative CT nomogram for enhanced PRISm and COPD differentiation: a cross-sectional study with interpretable diagnostic boundaries.","j":"PeerJ","y":"2026"},{"p":"40684711","t":"Comparison of nodule volumetric classification by using two different nodule segmentation algorithms in an LDCT lung cancer baseline screening dataset.","j":"European journal of radiology","y":"2025"},{"p":"40565908","t":"Radiological Insights into UIP Pattern: A Comparison Between IPF and Non-IPF Patients.","j":"Journal of clinical medicine","y":"2025"},{"p":"39881234","t":"Prediction of pulmonary function decline in fibrous interstitial lung abnormalities based on quantitative chest CT parameters.","j":"BMC medical imaging","y":"2025"},{"p":"39754864","t":"Feasibility of AI as first reader in the 4-IN-THE-LUNG-RUN lung cancer screening trial: impact on negative-misclassifications and clinical referral rate.","j":"European journal of cancer (Oxford, England : 1990)","y":"2025"},{"p":"39537690","t":"Comparison of AI software tools for automated detection, quantification and categorization of pulmonary nodules in the HANSE LCS trial.","j":"Scientific reports","y":"2024"},{"p":"38667523","t":"Predicting Postoperative Lung Function in Patients with Lung Cancer Using Imaging Biomarkers.","j":"Diseases (Basel, Switzerland)","y":"2024"},{"p":"38593627","t":"Absolute ground truth-based validation of computer-aided nodule detection and volumetry in low-dose CT imaging.","j":"Physica medica : PM : an international journal devoted to the applications of physics to medicine and biology : official journal of the Italian Association of Biomedical Physics (AIFB)","y":"2024"},{"p":"38365539","t":"CT quantification of pulmonary vessels in lung aging.","j":"Clinical radiology","y":"2024"},{"p":"38308760","t":"CCL18, CHI3L1, ANG2, IL-6 systemic levels are associated with the extent of lung damage and radiomic features in SARS-CoV-2 infection.","j":"Inflammation research : official journal of the European Histamine Research Society ... [et al.]","y":"2024"},{"p":"37500581","t":"Generative Adversarial Network-Based Image Conversion Among Different Computed Tomography Protocols and Vendors: Effects on Accuracy and Variability in Quantifying Regional Disease Patterns of Interstitial Lung Disease.","j":"Korean journal of radiology","y":"2023"},{"p":"36369019","t":"Subtyping preserved ratio impaired spirometry (PRISm) by using quantitative HRCT imaging characteristics.","j":"Respiratory research","y":"2022"},{"p":"35123156","t":"Outstanding negative prediction performance of solid pulmonary nodule volume AI for ultra-LDCT baseline lung cancer screening risk stratification.","j":"Lung cancer (Amsterdam, Netherlands)","y":"2022"},{"p":"31113494","t":"Quantitative computed tomography texture analysis: can it improve diagnostic accuracy to differentiate malignant lymph nodes?","j":"Cancer imaging : the official publication of the International Cancer Imaging Society","y":"2019"},{"p":"30388500","t":"Improvement of fully automated airway segmentation on volumetric computed tomographic images using a 2.5 dimensional convolutional neural net.","j":"Medical image analysis","y":"2019"}],"AVIEW LCS":[{"p":"38593627","t":"Absolute ground truth-based validation of computer-aided nodule detection and volumetry in low-dose CT imaging.","j":"Physica medica : PM : an international journal devoted to the applications of physics to medicine and biology : official journal of the Italian Association of Biomedical Physics (AIFB)","y":"2024"},{"p":"35123156","t":"Outstanding negative prediction performance of solid pulmonary nodule volume AI for ultra-LDCT baseline lung cancer screening risk stratification.","j":"Lung cancer (Amsterdam, Netherlands)","y":"2022"}],"InferRead Lung CT.AI":[{"p":"42052491","t":"AI-assisted clinico-quantitative imaging nomogram for preoperative malignancy risk in solid and part-solid pulmonary nodules ≤ 3 cm: development and internal validation.","j":"Frontiers in oncology","y":"2026"},{"p":"40531944","t":"Evaluating InferVision's Computer-Aided Detection (CAD) algorithm for Tuberculosis (TB) screening, Lusaka, Zambia.","j":"PLOS global public health","y":"2025"},{"p":"40529749","t":"A systematic review and meta-analysis of artificial intelligence software for tuberculosis diagnosis using chest X-ray imaging.","j":"Journal of thoracic disease","y":"2025"},{"p":"34991993","t":"Impact of dose reduction and iterative reconstruction algorithm on the detectability of pulmonary nodules by artificial intelligence.","j":"Diagnostic and interventional imaging","y":"2022"},{"p":"32971756","t":"Chest CT Computerized Aided Quantification of PNEUMONIA Lesions in COVID-19 Infection: A Comparison among Three Commercial Software.","j":"International journal of environmental research and public health","y":"2020"}],"InferRead CT Lung":[{"p":"42052491","t":"AI-assisted clinico-quantitative imaging nomogram for preoperative malignancy risk in solid and part-solid pulmonary nodules ≤ 3 cm: development and internal validation.","j":"Frontiers in oncology","y":"2026"},{"p":"40531944","t":"Evaluating InferVision's Computer-Aided Detection (CAD) algorithm for Tuberculosis (TB) screening, Lusaka, Zambia.","j":"PLOS global public health","y":"2025"},{"p":"40529749","t":"A systematic review and meta-analysis of artificial intelligence software for tuberculosis diagnosis using chest X-ray imaging.","j":"Journal of thoracic disease","y":"2025"},{"p":"34991993","t":"Impact of dose reduction and iterative reconstruction algorithm on the detectability of pulmonary nodules by artificial intelligence.","j":"Diagnostic and interventional imaging","y":"2022"},{"p":"32971756","t":"Chest CT Computerized Aided Quantification of PNEUMONIA Lesions in COVID-19 Infection: A Comparison among Three Commercial Software.","j":"International journal of environmental research and public health","y":"2020"}],"Veolity":[{"p":"40456600","t":"Performance of volume and diameter thresholds in malignancy prediction of solid nodules in lung cancer screening.","j":"Thorax","y":"2025"},{"p":"36431070","t":"Computer-Aided Diagnosis of Pulmonary Nodules in Rheumatoid Arthritis.","j":"Life (Basel, Switzerland)","y":"2022"}],"Virtual Nodule Clinic":[{"p":"37061539","t":"Longitudinal lung cancer prediction convolutional neural network model improves the classification of indeterminate pulmonary nodules.","j":"Scientific reports","y":"2023"},{"p":"36929398","t":"Recalibration of a Deep Learning Model for Low-Dose Computed Tomographic Images to Inform Lung Cancer Screening Intervals.","j":"JAMA network open","y":"2023"}],"AI-Rad Companion (Pulmonary)":[{"p":"42049455","t":"Evaluation of AI-Driven Automatic Segmentation Algorithms for Lung Shunt Fraction Estimation in Y-Labeled Microsphere Therapy.","j":"Journal of nuclear medicine technology","y":"2026"},{"p":"41890626","t":"Artificial intelligence-enabled cardiac volumetry for opportunistic screening of cardiomegaly on chest CT: clinical validation with echocardiography.","j":"Radiology advances","y":"2026"},{"p":"41879384","t":"The Impact of AI on Eye Gaze Patterns in Chest X-Ray Interpretation: An Eye Tracking Study of Novice and Expert Radiologists.","j":"Investigative radiology","y":"2026"},{"p":"41760332","t":"Association Between AI-derived Thoracic Calcium Volume and Aortic Valve Calcification Quantified by Agatston Scoring.","j":"In vivo (Athens, Greece)","y":"2026"},{"p":"41099164","t":"Quantitative Chest Computed Tomography and Machine Learning for Subphenotyping Small Airways Disease in Long COVID.","j":"Journal of thoracic imaging","y":"2026"},{"p":"40370862","t":"Quantitative assessment of lung opacities from CT of pulmonary artery imaging data in COVID-19 patients: artificial intelligence versus radiologist.","j":"BJR open","y":"2025"},{"p":"40291313","t":"Proposal for a Method for Assessing the Quality of an Updated Deep Learning-Based Automatic Segmentation Program.","j":"Cureus","y":"2025"},{"p":"40048870","t":"Artificial intelligence for opportunistic osteoporosis screening with a Hounsfield Unit in chronic obstructive pulmonary disease patients.","j":"Journal of clinical densitometry : the official journal of the International Society for Clinical Densitometry","y":"2025"},{"p":"39779514","t":"Repeatability of AI-based, automatic measurement of vertebral and cardiovascular imaging biomarkers in low-dose chest CT: the ImaLife cohort.","j":"European radiology","y":"2025"},{"p":"39222214","t":"Investigation on performance of multiple AI-based auto-contouring systems in organs at risks (OARs) delineation.","j":"Physical and engineering sciences in medicine","y":"2024"},{"p":"39123308","t":"Clinical application of convolutional neural network lung nodule detection software: An Australian quaternary hospital experience.","j":"Journal of medical imaging and radiation oncology","y":"2024"},{"p":"39023610","t":"Evaluation of a deep image-to-image network (DI2IN) auto-segmentation algorithm across a network of cancer centers.","j":"Journal of cancer research and therapeutics","y":"2024"},{"p":"39003487","t":"Midregional Proatrial Natriuretic Peptide (MRproANP) is associated with vertebral fractures and low bone density in patients with chronic obstructive pulmonary disease (COPD).","j":"Respiratory research","y":"2024"},{"p":"37464581","t":"Feasibility evaluation of novel AI-based deep-learning contouring algorithm for radiotherapy.","j":"Journal of applied clinical medical physics","y":"2023"},{"p":"37335231","t":"Assessing the role of an artificial intelligence assessment tool for thoracic aorta diameter on routine chest CT.","j":"The British journal of radiology","y":"2023"},{"p":"37167806","t":"Application of an artificial intelligence ensemble for detection of important secondary findings on lung ventilation and perfusion SPECT-CT.","j":"Clinical imaging","y":"2023"},{"p":"36872333","t":"Evaluation of the clinical performance of an AI-based application for the automated analysis of chest X-rays.","j":"Scientific reports","y":"2023"},{"p":"36863883","t":"A deep convolutional neural network ensemble for composite identification of pulmonary nodules and incidental findings on routine PET/CT.","j":"Clinical radiology","y":"2023"},{"p":"35869525","t":"A deep image-to-image network organ segmentation algorithm for radiation treatment planning: principles and evaluation.","j":"Radiation oncology (London, England)","y":"2022"},{"p":"34762815","t":"Artificial intelligence measuring the aortic diameter assist in identifying adverse blood pressure status including masked hypertension.","j":"Postgraduate medicine","y":"2022"},{"p":"34657812","t":"Artificial Intelligence has Similar Performance to Subjective Assessment of Emphysema Severity on Chest CT.","j":"Academic radiology","y":"2022"},{"p":"34964851","t":"An Artificial Intelligence-Based Chest X-ray Model on Human Nodule Detection Accuracy From a Multicenter Study.","j":"JAMA network open","y":"2021"},{"p":"33658025","t":"Automated detection of lung nodules and coronary artery calcium using artificial intelligence on low-dose CT scans for lung cancer screening: accuracy and prognostic value.","j":"BMC medicine","y":"2021"},{"p":"32235188","t":"Artificial Intelligence-based Fully Automated Per Lobe Segmentation and Emphysema-quantification Based on Chest Computed Tomography Compared With Global Initiative for Chronic Obstructive Lung Disease Severity of Smokers.","j":"Journal of thoracic imaging","y":"2020"}],"Rayvolve LN":[{"p":"41762966","t":"Performance of a complete AI radiographic suite across 258,373 X-rays from 26 countries: A worldwide evaluation.","j":"Radiography (London, England : 1995)","y":"2026"},{"p":"41558503","t":"Novel Artificial Intelligence Chest X-ray Diagnostics: A Quality Assessment of Their Agreement with Human Doctors in Clinical Routine.","j":"RoFo : Fortschritte auf dem Gebiete der Rontgenstrahlen und der Nuklearmedizin","y":"2026"}],"RevealAI-Lung":[{"p":"41237710","t":"A CADx tool improves lung nodule risk stratification when compared to British Thoracic Society guidelines on routine computed tomography (CT).","j":"Clinical radiology","y":"2026"}],"contextflow ADVANCE Chest CT":[{"p":"42238221","t":"Non-contiguous computed tomography lung scans can be manipulated to permit artificial intelligence analyses for interstitial lung disease in systemic sclerosis.","j":"Biology methods & protocols","y":"2026"}],"LungCT":[{"p":"41558503","t":"Novel Artificial Intelligence Chest X-ray Diagnostics: A Quality Assessment of Their Agreement with Human Doctors in Clinical Routine.","j":"RoFo : Fortschritte auf dem Gebiete der Rontgenstrahlen und der Nuklearmedizin","y":"2026"}],"LuCAS-Plus":[{"p":"39130781","t":"[Studies and Real-World Experience Regarding the Clinical Application of Artificial Intelligence Software for Lung Nodule Detection].","j":"Journal of the Korean Society of Radiology","y":"2024"}],"CT Pulmonary Nodules 3D Analysis":[{"p":"35840455","t":"A comparative study for the evaluation of CT-based conventional, radiomic, combined conventional and radiomic, and delta-radiomic features, and the prediction of the invasiveness of lung adenocarcinoma manifesting as ground-glass nodules.","j":"Clinical radiology","y":"2022"},{"p":"35186742","t":"Positron Emission Tomography/Magnetic Resonance Imaging Radiomics in Predicting Lung Adenocarcinoma and Squamous Cell Carcinoma.","j":"Frontiers in oncology","y":"2022"}]};
 
-// flatten
+// flatten; method = what the product actually is (ENRICH), not its year
+const METH=p=>(ENRICH[p.name]&&ENRICH[p.name][0])||p.era;
+const BLURB=p=>(ENRICH[p.name]&&ENRICH[p.name][1])||'';
 const PRODUCTS=[];
-DATA.forEach(co=>co.products.forEach(p=>PRODUCTS.push({...p,co:co.name,region:co.region})));
+DATA.forEach(co=>co.products.forEach(p=>PRODUCTS.push({...p,co:co.name,region:co.region,m:METH({name:p.name,era:p.era}),blurb:BLURB({name:p.name})})));
 
 const fdaUrl=k=>k&&k[0]==='K'?`https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=${k}`:(k&&k[0]==='P'?`https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpma/pma.cfm?id=${k}`:null);
 const esc=s=>(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -299,13 +337,14 @@ function stats(){
 }
 
 function eraKey(){
-  document.getElementById('eraKey').innerHTML=[1,2,3,4].map(e=>`<span class="ek${activeEras.has(e)?'':' off'}" onclick="toggleEra(${e})"><span class="dot" style="background:${ERA[e].hex}"></span>${ERA[e].name}<span class="yr">${ERA[e].years}</span></span>`).join('');
+  const cnt=e=>PRODUCTS.filter(p=>p.m===e).length;
+  document.getElementById('eraKey').innerHTML=[1,2,3,4].map(e=>`<span class="ek${activeEras.has(e)?'':' off'}" onclick="toggleEra(${e})"><span class="dot" style="background:${ERA[e].hex}"></span>${ERA[e].name}<span class="yr">${cnt(e)}</span></span>`).join('');
 }
 function toggleEra(e){activeEras.has(e)?activeEras.delete(e):activeEras.add(e);if(!activeEras.size)activeEras=new Set([1,2,3,4]);eraKey();drawTimeline();render();}
 
 function drawTimeline(){
   const svg=document.getElementById('timeline');
-  const dated=PRODUCTS.filter(p=>p.year&&activeEras.has(p.era)).sort((a,b)=>a.year-b.year);
+  const dated=PRODUCTS.filter(p=>p.year&&activeEras.has(p.m)).sort((a,b)=>a.year-b.year);
   const Y0=2001,Y1=2026, W=980, padL=18,padR=18,padT=26,padB=30, plotW=W-padL-padR;
   const x=y=>padL+ (y-Y0)/(Y1-Y0)*plotW;
   // lane packing
@@ -322,7 +361,7 @@ function drawTimeline(){
   s+=`<line class="ax" x1="${padL}" y1="${axisY-6}" x2="${W-padR}" y2="${axisY-6}"/></g>`;
   placed.forEach(p=>{
     const cy=padT+p.li*laneH, cx=p.px;
-    s+=`<circle class="tl-dot e${p.era}" cx="${cx}" cy="${cy}" r="4.5" data-t="${esc(p.name)} · ${esc(p.co)} · ${p.year}" tabindex="0"/>`;
+    s+=`<circle class="tl-dot e${p.m}" cx="${cx}" cy="${cy}" r="4.5" data-t="${esc(p.name)} · ${esc(p.co)} · ${p.year} · ${ERA[p.m].name}" tabindex="0"/>`;
   });
   svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
   svg.style.height=H+'px';
@@ -343,7 +382,7 @@ function render(){
   const reg=document.getElementById('fReg').value;
   const clr=document.getElementById('fClr').value;
   const hl=t=>q?esc(t).replace(new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','ig'),'<mark>$1</mark>'):esc(t);
-  let items=PRODUCTS.filter(p=>activeEras.has(p.era)
+  let items=PRODUCTS.filter(p=>activeEras.has(p.m)
     &&(!reg||p.region===reg)
     &&(clr!=='fda'||p.fda)&&(clr!=='ce'||p.ce)
     &&(!q||(p.name+' '+p.co).toLowerCase().includes(q)));
@@ -352,21 +391,36 @@ function render(){
   if(!items.length){host.innerHTML='<div class="empty">No products match these filters.</div>';return;}
   let html='';
   [1,2,3,4].forEach(e=>{
-    const grp=items.filter(p=>p.era===e).sort((a,b)=>(a.year||9999)-(b.year||9999)||a.co.localeCompare(b.co));
+    const grp=items.filter(p=>p.m===e).sort((a,b)=>(a.year||9999)-(b.year||9999)||a.co.localeCompare(b.co));
     if(!grp.length)return;
-    html+=`<div class="era-group" style="--ec:${ERA[e].hex}"><div class="era-hd"><span class="rn">${['I','II','III','IV'][e-1]}</span><div class="et"><div class="en">${ERA[e].name}</div><div class="ed">${ERA[e].desc}</div></div><div class="ey">${ERA[e].years}<br><span class="cnt">${grp.length} product${grp.length>1?'s':''}</span></div></div>`;
+    html+=`<div class="era-group" style="--ec:${ERA[e].hex}"><div class="era-hd"><span class="rn">${['I','II','III','IV'][e-1]}</span><div class="et"><div class="en">${ERA[e].name}</div><div class="ed">${ERA[e].desc}</div></div><div class="ey"><span class="cnt">${grp.length} product${grp.length>1?'s':''}</span></div></div>`;
     grp.forEach(p=>{
       const fda=p.fda?`<span class="badge b-fda">${fdaUrl(p.fda)?`<a href="${fdaUrl(p.fda)}" target="_blank" rel="noopener">${p.fda}</a>`:p.fda}</span>`:'';
       const ce=p.ce?`<span class="badge b-ce">CE</span>`:'';
-      html+=`<div class="prow"><span class="pflag" title="${REGION_NAME[p.region]||p.region}">${FLAG[p.region]||'🏳️'}</span>`
-        +`<div class="pmain"><div class="pname">${hl(p.name)}</div><div class="pco">${q&&p.co.toLowerCase().includes(q)?hl(p.co):coLink(p.co)}</div></div>`
+      const papers=PAPERS[p.name]||[];
+      const openable=p.blurb||papers.length;
+      const pid='d_'+p.name.replace(/[^a-z0-9]/gi,'');
+      html+=`<div class="prow${openable?' can':''}"${openable?` onclick="tog('${pid}')" tabindex="0" onkeydown="if(event.key==='Enter')tog('${pid}')"`:''}>`
+        +`<span class="pflag" title="${REGION_NAME[p.region]||p.region}">${FLAG[p.region]||'🏳️'}</span>`
+        +`<div class="pmain"><div class="pname">${hl(p.name)}${papers.length?`<span class="ppc">${papers.length} paper${papers.length>1?'s':''}</span>`:''}</div><div class="pco">${q&&p.co.toLowerCase().includes(q)?hl(p.co):coLink(p.co)}</div></div>`
         +`<div class="pmeta">${fda}${ce}</div>`
-        +`<div class="pyr${p.year?'':' na'}">${p.year||'—'}</div></div>`;
+        +`<div class="pyr${p.year?'':' na'}">${p.year||'—'}${openable?' <span class="pchev">▾</span>':''}</div></div>`;
+      if(openable){
+        html+=`<div class="pdet" id="${pid}">`;
+        if(p.blurb)html+=`<p class="pblurb">${esc(p.blurb)}</p>`;
+        if(papers.length){
+          html+=`<div class="plit"><div class="plit-h">Papers in our search corpus that name this product</div>`;
+          papers.forEach(a=>{html+=`<a class="plit-i" href="https://pubmed.ncbi.nlm.nih.gov/${a.p}/" target="_blank" rel="noopener"><span class="plit-y">${a.y}</span><span class="plit-t">${esc(a.t)}</span><span class="plit-j">${esc(a.j)}</span></a>`;});
+          html+=`</div>`;
+        } else html+=`<p class="pnone">No paper in the search corpus names this product specifically.</p>`;
+        html+=`</div>`;
+      }
     });
     html+='</div>';
   });
   host.innerHTML=html;
 }
+function tog(id){const el=document.getElementById(id);if(el)el.classList.toggle('open');const row=el&&el.previousElementSibling;if(row)row.classList.toggle('rowopen');}
 
 function perf(){
   const rows=PERF.slice().sort((a,b)=>a.era-b.era||a.co.localeCompare(b.co));
@@ -375,6 +429,50 @@ function perf(){
     const ref=p.refUrl?`<span class="pref"><a href="${p.refUrl}" target="_blank" rel="noopener">${esc(p.ref)}</a></span>`:esc(p.ref);
     return `<tr><td>${esc(p.co)}</td><td><b>${esc(p.prod)}</b></td><td class="ptask"><span class="pill-era" style="background:${ERA[p.era].hex}"></span>${esc(p.task)}</td><td>${v(p.sens)}</td><td>${v(p.spec)}</td><td>${v(p.auc)}</td><td style="color:var(--ink2)">${esc(p.dataset)}</td><td>${ref}</td></tr>`;
   }).join('');
+}
+
+function perfCharts(){
+  const num=x=>{if(!x)return null;const m=(''+x).match(/[\d.]+/);return m?parseFloat(m[0]):null;};
+  const yr=p=>{const m=(p.ref||'').match(/\b(19|20)\d{2}\b/);return m?+m[0]:null;};
+  const rows=PERF.map(p=>({e:p.era,s:num(p.sens),sp:num(p.spec),a:num(p.auc),y:yr(p)}));
+  const W=280,H=176,pl=30,pr=10,pt=10,pb=24, iw=W-pl-pr, ih=H-pt-pb;
+
+  // 1. scatter sens vs spec
+  (()=>{
+    const pts=rows.filter(r=>r.s!=null&&r.sp!=null);
+    const X=v=>pl+(v-60)/40*iw, Y=v=>pt+ih-(v-60)/40*ih;
+    let s='';
+    for(let g=60;g<=100;g+=10){s+=`<line class="cgrid" x1="${X(g)}" y1="${pt}" x2="${X(g)}" y2="${pt+ih}"/><line class="cgrid" x1="${pl}" y1="${Y(g)}" x2="${pl+iw}" y2="${Y(g)}"/><text x="${X(g)}" y="${H-9}" text-anchor="middle">${g}</text><text x="${pl-6}" y="${Y(g)+3}" text-anchor="end">${g}</text>`;}
+    s+=`<text x="${pl+iw/2}" y="${H}" text-anchor="middle">specificity %</text>`;
+    pts.forEach(r=>{s+=`<circle class="cd${r.e}" cx="${X(r.sp)}" cy="${Y(r.s)}" r="4.5" opacity="0.85"/>`;});
+    document.getElementById('pc-scatter').setAttribute('viewBox',`0 0 ${W} ${H}`);
+    document.getElementById('pc-scatter').innerHTML=s;
+    document.getElementById('pc-scatter-note').textContent=pts.length+' products report both · y-axis = sensitivity %';
+  })();
+
+  // 2. sensitivity over time
+  (()=>{
+    const pts=rows.filter(r=>r.s!=null&&r.y);
+    const X=v=>pl+(v-2001)/25*iw, Y=v=>pt+ih-(v-60)/40*ih;
+    let s='';
+    for(let g=60;g<=100;g+=10){s+=`<line class="cgrid" x1="${pl}" y1="${Y(g)}" x2="${pl+iw}" y2="${Y(g)}"/><text x="${pl-6}" y="${Y(g)+3}" text-anchor="end">${g}</text>`;}
+    [2005,2015,2025].forEach(t=>s+=`<text x="${X(t)}" y="${H-9}" text-anchor="middle">${t}</text>`);
+    s+=`<line class="cax" x1="${pl}" y1="${pt+ih}" x2="${pl+iw}" y2="${pt+ih}"/>`;
+    pts.forEach(r=>{s+=`<circle class="cd${r.e}" cx="${X(r.y)}" cy="${Y(r.s)}" r="4.5" opacity="0.85"/>`;});
+    document.getElementById('pc-time').setAttribute('viewBox',`0 0 ${W} ${H}`);
+    document.getElementById('pc-time').innerHTML=s;
+  })();
+
+  // 3. mean sensitivity by method (bars)
+  (()=>{
+    const bw=iw/4, means=[1,2,3,4].map(e=>{const v=rows.filter(r=>r.e===e&&r.s!=null).map(r=>r.s);return v.length?v.reduce((a,b)=>a+b,0)/v.length:null;});
+    const Y=v=>pt+ih-(v/100)*ih;
+    let s=`<line class="cax" x1="${pl}" y1="${pt+ih}" x2="${pl+iw}" y2="${pt+ih}"/>`;
+    for(let g=0;g<=100;g+=25){s+=`<line class="cgrid" x1="${pl}" y1="${Y(g)}" x2="${pl+iw}" y2="${Y(g)}"/><text x="${pl-6}" y="${Y(g)+3}" text-anchor="end">${g}</text>`;}
+    means.forEach((m,i)=>{const x=pl+i*bw+bw*0.2,w=bw*0.6;if(m!=null){s+=`<rect class="cb${i+1}" x="${x}" y="${Y(m)}" width="${w}" height="${pt+ih-Y(m)}" rx="3"/><text x="${x+w/2}" y="${Y(m)-4}" text-anchor="middle" style="font-weight:600">${Math.round(m)}</text>`;}s+=`<text x="${pl+i*bw+bw/2}" y="${H-9}" text-anchor="middle">${['I','II','III','IV'][i]}</text>`;});
+    document.getElementById('pc-method').setAttribute('viewBox',`0 0 ${W} ${H}`);
+    document.getElementById('pc-method').innerHTML=s;
+  })();
 }
 
 function fillRegions(){
@@ -388,6 +486,7 @@ function showTab(t){
     document.querySelector('.tab[data-tab="'+x+'"]').classList.toggle('active',x===t);
   });
   if(t==='database')drawTimeline();
+  if(t==='performance')perfCharts();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -400,7 +499,7 @@ function toggleTheme(){
 }
 (function(){try{const t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}})();
 
-stats();eraKey();fillRegions();perf();render();drawTimeline();
+stats();eraKey();fillRegions();perf();perfCharts();render();drawTimeline();
 addEventListener('resize',()=>{clearTimeout(window._rt);window._rt=setTimeout(drawTimeline,150)});
 </script>
 </body>
