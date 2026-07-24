@@ -3,8 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Global Commercial Lung-CAD — A Product-First Review Catalogue</title>
-<meta name="description" content="The 47 commercial CAD/AI software products for CT lung cancer screening (2001–2026) included in a product-first systematic review, across four technology eras.">
+<title>Lung-CAD Atlas — Commercial CAD/AI for lung cancer screening</title>
+<meta name="description" content="A reference catalogue of 47 commercially cleared CAD/AI software products (FDA & CE) for CT lung cancer screening, 2001–2026, grouped by the method each uses and linked to the literature.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230c7c8c'/%3E%3Ctext x='16' y='23' font-family='Arial,sans-serif' font-size='19' font-weight='700' fill='white' text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Lung-CAD Atlas — Commercial CAD/AI for lung cancer screening">
+<meta property="og:description" content="47 commercially cleared CAD/AI products for CT lung cancer screening (2001–2026), grouped by method and linked to the literature.">
+<meta property="og:url" content="https://ouyangxiaotong.github.io/global-cads-for-lcs/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Lung-CAD Atlas">
+<meta name="twitter:description" content="Commercial CAD/AI software for CT lung cancer screening, 2001–2026 — catalogued by method and matched to the literature.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -108,7 +116,12 @@
   /* era group + rows */
   .era-group{margin-bottom:10px;border:1px solid var(--rule);border-radius:14px;overflow:hidden;background:var(--panel)}
   .era-hd{display:flex;align-items:center;gap:14px;padding:15px 20px;border-left:3px solid var(--ec)}
-  .era-hd .rn{font-family:var(--disp);font-weight:800;font-size:14px;color:#fff;background:var(--ec);width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex:none}
+  .era-hd .rn{font-family:var(--disp);font-weight:800;font-size:13px;color:#fff;background:var(--ec);min-width:26px;height:26px;padding:0 6px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex:none}
+  .era-hd .en a{color:inherit;text-decoration:none;border-bottom:1px solid var(--rule)}
+  .era-hd .en a:hover{border-bottom-color:var(--accent)}
+  #mc-country .mcbar,#mc-years .mcbar{fill:var(--accent);opacity:.85}
+  #mc-country text,#mc-years text{fill:var(--ink3);font-family:var(--mono);font-size:10px}
+  #mc-country text.rl,#mc-years text.rv{fill:var(--ink2)}
   .era-hd .et{flex:1;min-width:0}
   .era-hd .en{font-family:var(--disp);font-weight:700;font-size:15px}
   .era-hd .ed{font-size:12px;color:var(--ink2);font-weight:300;margin-top:1px}
@@ -133,6 +146,7 @@
   .plit-j{grid-column:2;font-style:italic;font-size:11px;color:var(--ink3)}
   .pnone{font-size:12px;color:var(--ink3);font-style:italic;margin-top:10px}
   .pflag{font-size:18px}
+  .rchip{font-family:var(--mono);font-size:10px;font-weight:500;color:var(--ink2);background:var(--panel2);border:1px solid var(--rule);border-radius:5px;padding:2px 5px;letter-spacing:.03em}
   .pmain{min-width:0}
   .pname{font-size:13.5px;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .pco{font-family:var(--mono);font-size:11px;color:var(--ink3);margin-top:1px}
@@ -149,6 +163,10 @@
   mark{background:color-mix(in srgb,var(--accent) 30%,transparent);color:inherit;border-radius:2px}
   .empty{text-align:center;padding:52px;color:var(--ink3);font-family:var(--mono);font-size:13px}
 
+  /* mini charts */
+  .mini-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .mc-sub{font-family:var(--mono);font-size:10px;color:var(--ink3);font-weight:400}
+  @media (max-width:720px){.mini-grid{grid-template-columns:1fr}}
   /* performance charts */
   .pchart-grid{display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:18px}
   .pchart{border:1px solid var(--rule);border-radius:14px;background:var(--panel);padding:16px 20px 14px;box-shadow:var(--shadow)}
@@ -241,6 +259,13 @@
     </section>
 
     <section class="block">
+      <div class="mini-grid">
+        <div class="pchart"><div class="pchart-t">Products by country</div><svg id="mc-country"></svg></div>
+        <div class="pchart"><div class="pchart-t">Publications per year <span class="mc-sub">— the 194-paper search corpus</span></div><svg id="mc-years"></svg></div>
+      </div>
+    </section>
+
+    <section class="block">
       <div class="h2">The catalogue</div>
       <div class="h2-sub">Grouped by method · FDA 510(k)/PMA and CE-marked · click a product for its description and papers</div>
       <div class="controls">
@@ -248,8 +273,10 @@
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
           <input type="text" id="q" placeholder="Search products or developers…" oninput="render()">
         </div>
+        <select id="fGroup" onchange="render()" title="Group the catalogue by"><option value="method">Group: method</option><option value="developer">Group: developer</option><option value="region">Group: region</option><option value="year">Group: year</option></select>
         <select id="fReg" onchange="render()"><option value="">All regions</option></select>
         <select id="fClr" onchange="render()"><option value="">FDA &amp; CE</option><option value="fda">FDA-cleared</option><option value="ce">CE-marked</option></select>
+        <button class="ghost" onclick="exportCSV()" title="Download the catalogue as CSV" style="cursor:pointer">↓ CSV</button>
         <span class="rc" id="rc"></span>
       </div>
       <div id="list"></div>
@@ -316,6 +343,7 @@ const ERA={
 };
 const WEB={'Riverain Technologies':'https://www.riveraintech.com','GE Healthcare':'https://www.gehealthcare.com','Siemens Healthineers':'https://www.siemens-healthineers.com','Philips':'https://www.philips.com/healthcare','Median Technologies':'https://www.mediantechnologies.com','Hologic':'https://www.hologic.com','Fujifilm':'https://www.fujifilm.com/us/en/healthcare','Canon / Toshiba Medical':'https://global.medical.canon','Coreline Soft':'https://www.corelinesoft.com','Infervision':'https://www.infervision.com','MeVis Medical Solutions':'https://www.mevis.de','Optellum':'https://optellum.com','Samsung Electronics':'https://www.samsunghealthcare.com','Imagen Technologies':'https://www.imagen.ai','Brainomix':'https://www.brainomix.com','Qure.ai':'https://qure.ai','AZmed':'https://azmed.co','V5med':'https://www.v5med.com','Exo':'https://www.exo.inc','RevealDx':'https://revealdx.com','contextflow':'https://contextflow.com','DeepHealth':'https://deephealth.ai','GLEAMER':'https://www.gleamer.ai','Harrison.ai':'https://harrison.ai','JLK':'https://www.jlkgroup.com','Monitor Corporation':'https://www.monitornet.co.jp','Rayscape':'https://rayscape.ai','SenseTime':'https://www.sensetime.com/en','United Imaging Intelligence':'https://www.uii-ai.com'};
 
+const YEARS={"2004":1,"2005":3,"2006":2,"2007":4,"2008":5,"2009":2,"2010":5,"2011":3,"2012":6,"2013":3,"2014":4,"2015":8,"2016":4,"2017":3,"2018":3,"2019":6,"2020":5,"2021":8,"2022":17,"2023":22,"2024":26,"2025":30,"2026":24};
 const DATA=[{"name":"Riverain Technologies","region":"US","products":[{"name":"RapidScreen RS-2000","fda":"P000041","year":2001,"ce":false,"era":1},{"name":"ClearRead CT","fda":"K221612","year":2016,"ce":true,"era":2}]},{"name":"GE Healthcare","region":"US","products":[{"name":"Advanced Lung Analysis-1","fda":"K013381","year":2001,"ce":false,"era":1}]},{"name":"Siemens Healthineers","region":"DE","products":[{"name":"LungCare CT Software Package","fda":"K022013","year":2002,"ce":false,"era":1},{"name":"syngo Lung CAD","fda":"K063877","year":2006,"ce":false,"era":1},{"name":"syngo.CT Lung CAD (Version VD30)","fda":"K231157","year":2015,"ce":false,"era":3},{"name":"AI-Rad Companion (Pulmonary)","fda":"K233753","year":2019,"ce":false,"era":3}]},{"name":"R2 Technology","region":"US","products":[{"name":"ImageChecker-CT Workstation","fda":"K023003","year":2002,"ce":false,"era":1}]},{"name":"Philips","region":"NL","products":[{"name":"Lung Nodule Assessment and Comparison Option (LNA)","fda":"K162484","year":2003,"ce":false,"era":1}]},{"name":"Medicsight","region":"GB","products":[{"name":"MedicLung","fda":"K033412","year":2003,"ce":false,"era":1},{"name":"Lung CAR 1.1","fda":"K041807","year":2004,"ce":false,"era":1}]},{"name":"Median Technologies","region":"FR","products":[{"name":"LMS-LUNG/TRACK","fda":"K070868","year":2007,"ce":false,"era":1},{"name":"Median LCS / eyonis LCS","fda":"K251474","year":2026,"ce":false,"era":4}]},{"name":"Hologic","region":"US","products":[{"name":"ImageChecker CT CAD","fda":"K043617","year":2007,"ce":false,"era":1}]},{"name":"Fujifilm","region":"JP","products":[{"name":"Synapse 3D Lung & Abdomen Analysis","fda":"K130542","year":2011,"ce":false,"era":2},{"name":"Synapse 3D Nodule Analysis","fda":"K120679","year":2012,"ce":false,"era":2}]},{"name":"Canon / Toshiba Medical","region":"JP","products":[{"name":"SureSubtraction Lung","fda":"K133324","year":2014,"ce":false,"era":2}]},{"name":"Coreline Soft","region":"KR","products":[{"name":"AVIEW","fda":"K243689","year":2018,"ce":true,"era":3},{"name":"AVIEW Modeler","fda":"K192040","year":2019,"ce":false,"era":3},{"name":"AVIEW LCS","fda":"K193220","year":2020,"ce":true,"era":3},{"name":"AVIEW Lung Nodule CAD","fda":"K251203","year":2023,"ce":false,"era":3},{"name":"Med-LungCT AI","fda":null,"year":null,"ce":true,"era":3}]},{"name":"Infervision","region":"CN","products":[{"name":"InferRead Lung CT.AI","fda":"K240554","year":2020,"ce":false,"era":3},{"name":"InferRead CT Lung","fda":null,"year":null,"ce":true,"era":3}]},{"name":"MeVis Medical Solutions","region":"DE","products":[{"name":"Veolity","fda":"K201501","year":2021,"ce":true,"era":3}]},{"name":"Optellum","region":"GB","products":[{"name":"Virtual Nodule Clinic","fda":"K202300","year":2021,"ce":true,"era":3}]},{"name":"Samsung Electronics","region":"KR","products":[{"name":"Auto Lung Nodule Detection","fda":"K201560","year":2021,"ce":false,"era":3}]},{"name":"Imagen Technologies","region":"US","products":[{"name":"Lung-CAD","fda":"K230085","year":2023,"ce":false,"era":3}]},{"name":"Brainomix","region":"GB","products":[{"name":"Brainomix 360 e-Lung","fda":"K242411","year":2024,"ce":false,"era":4}]},{"name":"Qure.ai","region":"IN","products":[{"name":"qCT LN Quant","fda":"K240740","year":2024,"ce":false,"era":3},{"name":"qCT-Lung","fda":null,"year":null,"ce":true,"era":3}]},{"name":"AZmed","region":"FR","products":[{"name":"Rayvolve LN","fda":"K243831","year":2025,"ce":false,"era":4},{"name":"AZnod","fda":null,"year":null,"ce":true,"era":3}]},{"name":"V5med","region":"US","products":[{"name":"V5med Lung AI","fda":"K242919","year":2025,"ce":false,"era":4}]},{"name":"Exo","region":"US","products":[{"name":"Lung AI (LAI001)","fda":"K243239","year":2025,"ce":false,"era":4}]},{"name":"RevealDx","region":"US","products":[{"name":"RevealAI-Lung","fda":"K251769","year":2026,"ce":true,"era":3}]},{"name":"contextflow","region":"AT","products":[{"name":"contextflow ADVANCE Chest CT","fda":null,"year":null,"ce":true,"era":3}]},{"name":"DeepHealth","region":"NL","products":[{"name":"Lung Check (Veye Lung Nodules)","fda":null,"year":null,"ce":true,"era":3}]},{"name":"GLEAMER","region":"FR","products":[{"name":"LungCT","fda":null,"year":null,"ce":true,"era":3}]},{"name":"Harrison.ai","region":"AU","products":[{"name":"Harrison CT Chest","fda":null,"year":null,"ce":true,"era":4}]},{"name":"HY Medical","region":"CN","products":[{"name":"CT AI-assisted Lung Nodule Detection","fda":null,"year":null,"ce":true,"era":3}]},{"name":"JLK","region":"KR","products":[{"name":"JLD-01K","fda":null,"year":null,"ce":true,"era":3}]},{"name":"Monitor Corporation","region":"JP","products":[{"name":"LuCAS-Plus","fda":null,"year":null,"ce":true,"era":3}]},{"name":"Rayscape","region":"PT","products":[{"name":"Lung CT","fda":null,"year":null,"ce":true,"era":3}]},{"name":"SenseTime","region":"CN","products":[{"name":"SenseCare-Lung Pro","fda":null,"year":null,"ce":true,"era":3}]},{"name":"United Imaging Intelligence","region":"CN","products":[{"name":"CT Pulmonary Nodules 3D Analysis","fda":null,"year":null,"ce":true,"era":3},{"name":"uAI-Discover Chest CT","fda":null,"year":null,"ce":true,"era":3}]}];
 const PERF=[{"co":"R2 Technology","prod":"ImageChecker-CT Workstation","era":1,"task":"Nodule detection","sens":"71%","spec":null,"auc":null,"context":"2 FP/scan","dataset":"ELCAP multi-site","ref":"Wormanns et al., Eur Radiol 2004","refUrl":null},{"co":"Siemens / Siemens Healthineers","prod":"LungCare CT Software Package","era":1,"task":"Nodule detection","sens":"70%","spec":null,"auc":null,"context":"4 FP/scan","dataset":"Clinical CT (n=34)","ref":"Wormanns et al., Eur Radiol 2004","refUrl":null},{"co":"Median Technologies","prod":"LMS-LUNG/TRACK","era":1,"task":"Nodule tracking","sens":null,"spec":null,"auc":"0.80","context":"Volume measurement reproducibility","dataset":"NELSON trial subset","ref":"Gietema et al., Eur Radiol 2010","refUrl":null},{"co":"Riverain Technologies","prod":"ClearRead CT","era":2,"task":"Nodule detection (reader study)","sens":null,"spec":null,"auc":"0.89","context":"Reader AUC improvement","dataset":"Clinical CT multi-reader","ref":"FDA 510(k) K161201","refUrl":"https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K161201"},{"co":"Siemens / Siemens Healthineers","prod":"syngo.CT Lung CAD","era":3,"task":"Nodule detection","sens":"91%","spec":null,"auc":null,"context":"4 FP/scan","dataset":"Multi-site clinical CT","ref":"FDA 510(k) K193216","refUrl":"https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K193216"},{"co":"Coreline Soft","prod":"AVIEW LCS","era":3,"task":"Nodule detection","sens":"91%","spec":"86%","auc":null,"context":"Per-nodule, ≥3 mm","dataset":"Clinical CT (Korea, n=410)","ref":"Lee et al., Korean J Radiol 2020","refUrl":null},{"co":"Optellum","prod":"Optellum Virtual Nodule Clinic","era":3,"task":"Malignancy prediction","sens":"86%","spec":"76%","auc":"0.87","context":"12-month malignancy risk","dataset":"NHS Lung Health Check","ref":"Baldwin et al., Thorax 2023","refUrl":null},{"co":"Coreline Soft","prod":"AVIEW Lung Nodule CAD","era":3,"task":"Nodule detection","sens":"94%","spec":"88%","auc":"0.96","context":"Per-nodule","dataset":"Multi-site CT","ref":"FDA 510(k) K221592","refUrl":"https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K221592"},{"co":"Siemens / Siemens Healthineers","prod":"syngo.CT Lung CAD VD30","era":3,"task":"Nodule detection","sens":"95%","spec":null,"auc":null,"context":"4 FP/scan, ≥4 mm nodules","dataset":"Multi-site CT","ref":"FDA 510(k) K231157","refUrl":"https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K231157"},{"co":"GE Medical Systems / GE Healthcare","prod":"Advanced Lung Analysis II / Lung VCAR","era":1,"task":"Nodule detection","sens":"80%","spec":null,"auc":null,"context":"4 FP/scan","dataset":"ELCAP multi-site","ref":"Rubin et al., Radiology 2005","refUrl":null},{"co":"Imagen Technologies","prod":"Lung-CAD","era":3,"task":"Nodule detection","sens":"91%","spec":"84%","auc":null,"context":"Per-patient","dataset":"Multi-site CT","ref":"FDA 510(k) K223811","refUrl":"https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K223811"},{"co":"Infervision","prod":"InferRead Lung CT.AI","era":3,"task":"Nodule detection","sens":"93%","spec":"89%","auc":"0.95","context":"Per-nodule, ≥3 mm","dataset":"Multi-site CT (Asia)","ref":"FDA 510(k) K240554","refUrl":"https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K240554"},{"co":"V5med","prod":"V5med Lung AI","era":4,"task":"Nodule detection","sens":"91%","spec":"88%","auc":"0.94","context":"Per-nodule","dataset":"Multi-site CT","ref":"FDA 510(k) K242919","refUrl":"https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K242919"},{"co":"Exo Inc","prod":"Lung AI (LAI001)","era":4,"task":"Nodule detection","sens":"90%","spec":"85%","auc":null,"context":"Per-patient","dataset":"Multi-site CT","ref":"FDA 510(k) K243239","refUrl":"https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K243239"},{"co":"AZmed","prod":"Rayvolve LN","era":4,"task":"Nodule detection","sens":"92%","spec":"87%","auc":null,"context":"Per-nodule","dataset":"Multi-site CT","ref":"FDA 510(k) K243831","refUrl":"https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K243831"},{"co":"Median Technologies","prod":"eyonis LCS 1.0","era":4,"task":"Nodule detection","sens":"95%","spec":null,"auc":"0.96","context":"Per-nodule, ≥4 mm","dataset":"NLST + NELSON subset","ref":"FDA 510(k) K251474","refUrl":"https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K251474"}];
 const ENRICH={"RapidScreen RS-2000":[1,"Chest-radiograph CAD — the first FDA-approved lung nodule detector; hand-crafted feature filters flag suspicious opacities."],"Advanced Lung Analysis-1":[1,"CT nodule detection and volumetry via geometric and morphological filtering."],"ImageChecker-CT Workstation":[1,"Classic second-reader CADe: morphological candidate detection marks suspected nodules on CT."],"LungCare CT Software Package":[1,"CT nodule detection with volumetric follow-up on the syngo workstation."],"Lung Nodule Assessment and Comparison Option (LNA)":[1,"Nodule assessment and serial-comparison option on the Philips CT workstation."],"syngo Lung CAD":[2,"Feature-based second-reader nodule CAD integrated into the syngo reading environment."],"MedicLung":[2,"Feature-based candidate detection and scoring of pulmonary nodules on CT."],"Lung CAR 1.1":[2,"Computer-aided reading of pulmonary nodules with hand-crafted feature classifiers."],"ImageChecker CT CAD":[1,"Nodule CADe of the R2 / Hologic lineage for thin-section chest CT."],"LMS-LUNG/TRACK":[2,"Nodule volumetry and growth tracking; volume-measurement reproducibility validated in NELSON."],"Synapse 3D Lung & Abdomen Analysis":[2,"Multi-organ 3D analysis suite with a hand-engineered lung nodule segmentation module."],"Synapse 3D Nodule Analysis":[2,"Nodule segmentation and volumetric quantification within Synapse 3D."],"SureSubtraction Lung":[1,"Temporal subtraction of serial CT to reveal interval change in nodules by image processing."],"ClearRead CT":[3,"Convolutional vessel-suppression plus learned nodule detection and volumetric change tracking."],"syngo.CT Lung CAD (Version VD30)":[3,"Deep-learning rebuild of syngo Lung CAD for second-reader nodule detection."],"AVIEW":[3,"Deep-learning LDCT screening suite: nodule detection, Lung-RADS, emphysema and coronary calcium."],"AVIEW Modeler":[3,"3D segmentation and modeling companion to the AVIEW platform."],"AVIEW LCS":[3,"Lung cancer screening configuration of AVIEW with automated Lung-RADS reporting."],"AVIEW Lung Nodule CAD":[3,"Dedicated deep-learning nodule detection and characterization."],"Med-LungCT AI":[3,"Deep-learning nodule detection, classification and Lung-RADS reporting."],"InferRead Lung CT.AI":[3,"Deep-learning nodule detection and characterization for screening CT."],"InferRead CT Lung":[3,"Lung cancer screening solution: nodule detection with multi-timepoint analysis and reporting."],"Veolity":[3,"Reading solution for nodule management: CAD of solid / subsolid nodules with volumetric temporal comparison."],"Virtual Nodule Clinic":[3,"Deep-learning malignancy risk score (Lung Cancer Prediction CNN) for indeterminate nodules."],"Auto Lung Nodule Detection":[3,"Deep-learning nodule detection integrated with Samsung CT scanners."],"AI-Rad Companion (Pulmonary)":[3,"Deep-learning chest-CT nodule detection and volumetry delivered as a cloud / edge companion."],"Lung-CAD":[3,"Deep-learning nodule detection on chest CT."],"Brainomix 360 e-Lung":[3,"Deep-learning lung nodule module of the Brainomix 360 imaging platform."],"qCT LN Quant":[3,"Deep-learning lung nodule detection and quantification."],"qCT-Lung":[3,"Deep-learning nodule detection with emphysema flagging for opportunistic screening."],"Rayvolve LN":[3,"Deep-learning lung nodule detection."],"V5med Lung AI":[3,"Deep-learning nodule detection and characterization."],"Lung AI (LAI001)":[3,"Deep-learning lung nodule detection."],"Median LCS / eyonis LCS":[3,"Deep-learning lung cancer screening detector; validated against NLST / NELSON."],"RevealAI-Lung":[3,"Radiomics / deep-learning malignancy similarity index (mSI) for nodule characterization."],"AZnod":[3,"Deep-learning nodule detection, characterization and classification."],"contextflow ADVANCE Chest CT":[4,"Learned content-based image retrieval plus anomaly detection across chest-CT patterns."],"Lung Check (Veye Lung Nodules)":[3,"AI nodule detection, classification and growth tracking, in routine European use."],"LungCT":[3,"Deep-learning malignancy detection and localization of pulmonary lesions."],"Harrison CT Chest":[4,"Multi-finding chest-CT foundation model (up to ~167 features) with automated report generation."],"CT AI-assisted Lung Nodule Detection":[3,"Nodule detection, localization, volume quantification and malignancy scoring."],"JLD-01K":[3,"Deep-learning nodule detection with Lung-RADS and Vancouver risk and report generation."],"LuCAS-Plus":[3,"Nodule detection, characterization and longitudinal follow-up."],"Lung CT":[3,"Deep-learning nodule detection, sizing and automatic comparison across serial CT."],"SenseCare-Lung Pro":[3,"Nodule detection, ground-glass analysis and automated structured reporting."],"CT Pulmonary Nodules 3D Analysis":[3,"3D nodule reconstruction with benign / malignant analysis and graphical reports."],"uAI-Discover Chest CT":[3,"Nodule detection with benign / malignant prediction, Lung-RADS and follow-up analysis."]};
@@ -380,10 +408,61 @@ function drawTimeline(){
 
 function coLink(name){const u=WEB[name];return u?`<a href="${u}" target="_blank" rel="noopener">${esc(name)}</a>`:esc(name);}
 
+function rowHtml(p,q,hl){
+  const fda=p.fda?`<span class="badge b-fda">${fdaUrl(p.fda)?`<a href="${fdaUrl(p.fda)}" target="_blank" rel="noopener">${p.fda}</a>`:p.fda}</span>`:'';
+  const ce=p.ce?`<span class="badge b-ce">CE</span>`:'';
+  const papers=PAPERS[p.name]||[];
+  const openable=p.blurb||papers.length;
+  const pid='d_'+p.name.replace(/[^a-z0-9]/gi,'');
+  let h=`<div class="prow${openable?' can':''}"${openable?` onclick="tog('${pid}')" tabindex="0" onkeydown="if(event.key==='Enter')tog('${pid}')"`:''}>`
+    +`<span class="rchip" title="${REGION_NAME[p.region]||p.region}">${p.region}</span>`
+    +`<div class="pmain"><div class="pname">${hl(p.name)}${papers.length?`<span class="ppc">${papers.length} paper${papers.length>1?'s':''}</span>`:''}</div><div class="pco">${q&&p.co.toLowerCase().includes(q)?hl(p.co):coLink(p.co)}</div></div>`
+    +`<div class="pmeta">${fda}${ce}</div>`
+    +`<div class="pyr${p.year?'':' na'}">${p.year||'—'}${openable?' <span class="pchev">▾</span>':''}</div></div>`;
+  if(openable){
+    h+=`<div class="pdet" id="${pid}">`;
+    if(p.blurb)h+=`<p class="pblurb">${esc(p.blurb)}</p>`;
+    if(papers.length){
+      h+=`<div class="plit"><div class="plit-h">Papers in our search corpus that name this product</div>`;
+      papers.forEach(a=>{h+=`<a class="plit-i" href="https://pubmed.ncbi.nlm.nih.gov/${a.p}/" target="_blank" rel="noopener"><span class="plit-y">${a.y}</span><span class="plit-t">${esc(a.t)}</span><span class="plit-j">${esc(a.j)}</span></a>`;});
+      h+=`</div>`;
+    } else h+=`<p class="pnone">No paper in the search corpus names this product specifically.</p>`;
+    h+=`</div>`;
+  }
+  return h;
+}
+
+function buildGroups(items,mode){
+  const byYear=(a,b)=>(a.year||9999)-(b.year||9999)||a.co.localeCompare(b.co);
+  if(mode==='method'){
+    return [1,2,3,4].map(e=>({items:items.filter(p=>p.m===e).sort(byYear),
+      accent:ERA[e].hex, badge:['I','II','III','IV'][e-1], title:ERA[e].name, sub:ERA[e].desc})).filter(g=>g.items.length);
+  }
+  if(mode==='developer'){
+    const co={};items.forEach(p=>(co[p.co]=co[p.co]||[]).push(p));
+    return Object.keys(co).map(c=>{const g=co[c].sort(byYear);const u=WEB[c];
+      return {items:g, accent:'var(--accent)', badge:g[0].region,
+        title:u?`<a href="${u}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(c)}</a>`:esc(c),
+        sub:REGION_NAME[g[0].region]||g[0].region};
+    }).sort((a,b)=>(a.items[0].year||9999)-(b.items[0].year||9999));
+  }
+  if(mode==='region'){
+    const rg={};items.forEach(p=>(rg[p.region]=rg[p.region]||[]).push(p));
+    return Object.keys(rg).map(r=>({items:rg[r].sort(byYear), accent:'var(--accent)',
+      badge:r, title:REGION_NAME[r]||r, sub:''}))
+      .sort((a,b)=>b.items.length-a.items.length);
+  }
+  // year
+  const yr={};items.forEach(p=>{const k=p.year||'—';(yr[k]=yr[k]||[]).push(p);});
+  return Object.keys(yr).sort((a,b)=>(b==='—'?-1:+b)-(a==='—'?-1:+a)).map(k=>({items:yr[k].sort((a,b)=>a.co.localeCompare(b.co)),
+    accent:'var(--accent)', badge:'', title:k==='—'?'CE-marked · no public date':k, sub:''}));
+}
+
 function render(){
   const q=document.getElementById('q').value.trim().toLowerCase();
   const reg=document.getElementById('fReg').value;
   const clr=document.getElementById('fClr').value;
+  const mode=document.getElementById('fGroup').value;
   const hl=t=>q?esc(t).replace(new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','ig'),'<mark>$1</mark>'):esc(t);
   let items=PRODUCTS.filter(p=>activeEras.has(p.m)
     &&(!reg||p.region===reg)
@@ -393,37 +472,18 @@ function render(){
   document.getElementById('rc').textContent=items.length+' / '+PRODUCTS.length+' products';
   if(!items.length){host.innerHTML='<div class="empty">No products match these filters.</div>';return;}
   let html='';
-  [1,2,3,4].forEach(e=>{
-    const grp=items.filter(p=>p.m===e).sort((a,b)=>(a.year||9999)-(b.year||9999)||a.co.localeCompare(b.co));
-    if(!grp.length)return;
-    html+=`<div class="era-group" style="--ec:${ERA[e].hex}"><div class="era-hd"><span class="rn">${['I','II','III','IV'][e-1]}</span><div class="et"><div class="en">${ERA[e].name}</div><div class="ed">${ERA[e].desc}</div></div><div class="ey"><span class="cnt">${grp.length} product${grp.length>1?'s':''}</span></div></div>`;
-    grp.forEach(p=>{
-      const fda=p.fda?`<span class="badge b-fda">${fdaUrl(p.fda)?`<a href="${fdaUrl(p.fda)}" target="_blank" rel="noopener">${p.fda}</a>`:p.fda}</span>`:'';
-      const ce=p.ce?`<span class="badge b-ce">CE</span>`:'';
-      const papers=PAPERS[p.name]||[];
-      const openable=p.blurb||papers.length;
-      const pid='d_'+p.name.replace(/[^a-z0-9]/gi,'');
-      html+=`<div class="prow${openable?' can':''}"${openable?` onclick="tog('${pid}')" tabindex="0" onkeydown="if(event.key==='Enter')tog('${pid}')"`:''}>`
-        +`<span class="pflag" title="${REGION_NAME[p.region]||p.region}">${FLAG[p.region]||'🏳️'}</span>`
-        +`<div class="pmain"><div class="pname">${hl(p.name)}${papers.length?`<span class="ppc">${papers.length} paper${papers.length>1?'s':''}</span>`:''}</div><div class="pco">${q&&p.co.toLowerCase().includes(q)?hl(p.co):coLink(p.co)}</div></div>`
-        +`<div class="pmeta">${fda}${ce}</div>`
-        +`<div class="pyr${p.year?'':' na'}">${p.year||'—'}${openable?' <span class="pchev">▾</span>':''}</div></div>`;
-      if(openable){
-        html+=`<div class="pdet" id="${pid}">`;
-        if(p.blurb)html+=`<p class="pblurb">${esc(p.blurb)}</p>`;
-        if(papers.length){
-          html+=`<div class="plit"><div class="plit-h">Papers in our search corpus that name this product</div>`;
-          papers.forEach(a=>{html+=`<a class="plit-i" href="https://pubmed.ncbi.nlm.nih.gov/${a.p}/" target="_blank" rel="noopener"><span class="plit-y">${a.y}</span><span class="plit-t">${esc(a.t)}</span><span class="plit-j">${esc(a.j)}</span></a>`;});
-          html+=`</div>`;
-        } else html+=`<p class="pnone">No paper in the search corpus names this product specifically.</p>`;
-        html+=`</div>`;
-      }
-    });
+  buildGroups(items,mode).forEach(g=>{
+    html+=`<div class="era-group" style="--ec:${g.accent}"><div class="era-hd">`
+      +(g.badge?`<span class="rn">${g.badge}</span>`:'')
+      +`<div class="et"><div class="en">${g.title}</div>${g.sub?`<div class="ed">${g.sub}</div>`:''}</div>`
+      +`<div class="ey"><span class="cnt">${g.items.length} product${g.items.length>1?'s':''}</span></div></div>`;
+    g.items.forEach(p=>{html+=rowHtml(p,q,hl);});
     html+='</div>';
   });
   host.innerHTML=html;
 }
-function tog(id){const el=document.getElementById(id);if(el)el.classList.toggle('open');const row=el&&el.previousElementSibling;if(row)row.classList.toggle('rowopen');}
+function tog(id){const el=document.getElementById(id);if(!el)return;el.classList.toggle('open');const row=el.previousElementSibling;if(row)row.classList.toggle('rowopen');
+  const name=id.slice(2);if(el.classList.contains('open'))location.hash='p='+encodeURIComponent(name);}
 
 function perf(){
   const rows=PERF.slice().sort((a,b)=>a.era-b.era||a.co.localeCompare(b.co));
@@ -476,7 +536,44 @@ function perfCharts(){
 
 function fillRegions(){
   const regs=[...new Set(PRODUCTS.map(p=>p.region))].sort((a,b)=>(REGION_NAME[a]||a).localeCompare(REGION_NAME[b]||b));
-  document.getElementById('fReg').insertAdjacentHTML('beforeend',regs.map(r=>`<option value="${r}">${FLAG[r]} ${REGION_NAME[r]||r}</option>`).join(''));
+  document.getElementById('fReg').insertAdjacentHTML('beforeend',regs.map(r=>`<option value="${r}">${REGION_NAME[r]||r}</option>`).join(''));
+}
+
+function drawMiniCharts(){
+  // products by country (horizontal bars)
+  (()=>{
+    const c={};PRODUCTS.forEach(p=>c[p.region]=(c[p.region]||0)+1);
+    const d=Object.entries(c).sort((a,b)=>b[1]-a[1]);
+    const W=360, lw=104, pr=26, rh=20, pt=4, iw=W-lw-pr, H=pt+d.length*rh+4, mx=Math.max(...d.map(x=>x[1]));
+    let s='';
+    d.forEach(([r,n],i)=>{const y=pt+i*rh+3, bh=rh-8, bw=n/mx*iw;
+      s+=`<text class="rl" x="${lw-10}" y="${y+bh/2+4}" text-anchor="end">${esc(REGION_NAME[r]||r)}</text>`;
+      s+=`<rect class="mcbar" x="${lw}" y="${y}" width="${bw}" height="${bh}" rx="3"/>`;
+      s+=`<text class="rv" x="${lw+bw+6}" y="${y+bh/2+4}">${n}</text>`;});
+    const el=document.getElementById('mc-country');el.setAttribute('viewBox',`0 0 ${W} ${H}`);el.innerHTML=s;
+  })();
+  // publications per year (vertical bars)
+  (()=>{
+    const ys=Object.keys(YEARS).map(Number).sort((a,b)=>a-b), y0=ys[0], y1=ys[ys.length-1];
+    const W=360,H=150, pl=22,pr=8,pt=8,pb=22, iw=W-pl-pr, ih=H-pt-pb, mx=Math.max(...Object.values(YEARS));
+    const bw=iw/ys.length;
+    let s='';
+    for(let g=0;g<=mx;g+=10){const gy=pt+ih-g/mx*ih;s+=`<line class="cgrid" x1="${pl}" y1="${gy}" x2="${pl+iw}" y2="${gy}" stroke="var(--rule)" stroke-dasharray="2 3" opacity=".5"/><text x="${pl-5}" y="${gy+3}" text-anchor="end">${g}</text>`;}
+    ys.forEach((yr,i)=>{const n=YEARS[yr],bh=n/mx*ih,x=pl+i*bw+bw*0.15,w=bw*0.7,yy=pt+ih-bh;
+      s+=`<rect class="mcbar" x="${x}" y="${yy}" width="${w}" height="${bh}" rx="1.5"/>`;
+      if([2005,2010,2015,2020,2025].includes(yr))s+=`<text x="${pl+i*bw+bw/2}" y="${H-7}" text-anchor="middle">${yr}</text>`;});
+    const el=document.getElementById('mc-years');el.setAttribute('viewBox',`0 0 ${W} ${H}`);el.innerHTML=s;
+  })();
+}
+
+function exportCSV(){
+  const cols=['product','developer','region','method','year','fda_or_pma','ce_marked'];
+  const mn={1:'rule-based',2:'classical ML',3:'deep learning',4:'multimodal'};
+  const esc2=v=>{v=''+(v==null?'':v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;};
+  const lines=[cols.join(',')];
+  PRODUCTS.slice().sort((a,b)=>(a.year||9999)-(b.year||9999)).forEach(p=>lines.push([p.name,p.co,REGION_NAME[p.region]||p.region,mn[p.m],p.year||'',p.fda||'',p.ce?'yes':'no'].map(esc2).join(',')));
+  const blob=new Blob([lines.join('\n')],{type:'text/csv'});const u=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=u;a.download='lung-cad-atlas.csv';a.click();URL.revokeObjectURL(u);
 }
 
 function showTab(t){
@@ -484,9 +581,17 @@ function showTab(t){
     document.getElementById('tab-'+x).classList.toggle('hidden',x!==t);
     document.querySelector('.tab[data-tab="'+x+'"]').classList.toggle('active',x===t);
   });
-  if(t==='database')drawTimeline();
+  if(t==='database'){drawTimeline();drawMiniCharts();}
   if(t==='performance')perfCharts();
+  try{history.replaceState(null,'',t==='database'?location.pathname:'#'+t)}catch(e){}
   window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function applyHash(){
+  const h=decodeURIComponent(location.hash.replace(/^#/,''));
+  if(h==='performance'||h==='methods'){showTab(h);return;}
+  if(h.startsWith('p=')){const name=h.slice(2);const el=document.getElementById('d_'+name.replace(/[^a-z0-9]/gi,''));
+    if(el&&!el.classList.contains('open')){tog('d_'+name.replace(/[^a-z0-9]/gi,''));el.scrollIntoView({block:'center'});}}
 }
 
 function toggleTheme(){
@@ -498,8 +603,8 @@ function toggleTheme(){
 }
 (function(){try{const t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}})();
 
-stats();eraKey();fillRegions();perf();perfCharts();render();drawTimeline();
-addEventListener('resize',()=>{clearTimeout(window._rt);window._rt=setTimeout(drawTimeline,150)});
+stats();eraKey();fillRegions();perf();perfCharts();render();drawTimeline();drawMiniCharts();applyHash();
+addEventListener('resize',()=>{clearTimeout(window._rt);window._rt=setTimeout(()=>{drawTimeline();drawMiniCharts();},150)});
 </script>
 </body>
 </html>
